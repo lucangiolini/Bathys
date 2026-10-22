@@ -1,0 +1,2551 @@
+<!doctype html>
+<html lang="it" data-look="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06223A">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bathys">
+<title>Bathys</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+:root{
+  --ink:#0B1F2E;--ink2:#36505F;--glass:rgba(255,255,255,.56);--glass2:rgba(255,255,255,.8);--stroke:rgba(255,255,255,.9);
+  --line:rgba(11,31,46,.1);--sh:inset 0 1px 0 rgba(255,255,255,.9),0 10px 30px rgba(11,31,46,.12);
+  --warn:#8A4B00;--warnbg:rgba(255,170,60,.24);--err:#A3261B;--errbg:rgba(220,60,40,.14);
+  --cta:#0B3A5C;--ctaink:#FFFFFF;--sel:rgba(255,255,255,.95);--sheet:rgba(236,243,247,.82);--scrim:rgba(11,31,46,.28);
+  --base:#DCE7EC;color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#FFFFFF;--ink2:rgba(255,255,255,.82);--glass:rgba(255,255,255,.10);--glass2:rgba(255,255,255,.17);--stroke:rgba(255,255,255,.22);
+    --line:rgba(255,255,255,.13);--sh:inset 0 1px 0 rgba(255,255,255,.35),0 14px 36px rgba(0,0,0,.28);
+    --warn:#FFC46B;--warnbg:rgba(255,176,64,.18);--err:#FF9B8F;--errbg:rgba(255,90,70,.18);
+    --cta:rgba(255,255,255,.93);--ctaink:#06223A;--sel:rgba(255,255,255,.26);--sheet:rgba(10,26,42,.64);--scrim:rgba(0,0,0,.4);
+    --base:#06223A;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"],:root[data-look="dark"]{
+  --ink:#FFFFFF;--ink2:rgba(255,255,255,.82);--glass:rgba(255,255,255,.10);--glass2:rgba(255,255,255,.17);--stroke:rgba(255,255,255,.22);
+  --line:rgba(255,255,255,.13);--sh:inset 0 1px 0 rgba(255,255,255,.35),0 14px 36px rgba(0,0,0,.28);
+  --warn:#FFC46B;--warnbg:rgba(255,176,64,.18);--err:#FF9B8F;--errbg:rgba(255,90,70,.18);
+  --cta:rgba(255,255,255,.93);--ctaink:#06223A;--sel:rgba(255,255,255,.26);--sheet:rgba(10,26,42,.64);--scrim:rgba(0,0,0,.4);
+  --base:#06223A;color-scheme:dark;
+}
+:root[data-look="light"]{
+  --ink:#0B1F2E;--ink2:#36505F;--glass:rgba(255,255,255,.56);--glass2:rgba(255,255,255,.8);--stroke:rgba(255,255,255,.9);
+  --line:rgba(11,31,46,.1);--sh:inset 0 1px 0 rgba(255,255,255,.9),0 10px 30px rgba(11,31,46,.12);
+  --warn:#8A4B00;--warnbg:rgba(255,170,60,.24);--err:#A3261B;--errbg:rgba(220,60,40,.14);
+  --cta:#0B3A5C;--ctaink:#FFFFFF;--sel:rgba(255,255,255,.95);--sheet:rgba(236,243,247,.82);--scrim:rgba(11,31,46,.28);
+  --base:#DCE7EC;color-scheme:light;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+html,body,body *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+#miniBody img{-webkit-touch-callout:default}
+html,body{height:100%;margin:0}
+body{background:var(--base);color:var(--ink);font-family:'Geist',-apple-system,BlinkMacSystemFont,'Helvetica Neue',system-ui,sans-serif;font-size:16px;line-height:1.35;-webkit-font-smoothing:antialiased;overflow:hidden;font-variant-numeric:tabular-nums;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:12px}
+.serif{font-family:'Instrument Serif','Iowan Old Style',Georgia,serif;font-weight:400}
+.glass{background:var(--glass);-webkit-backdrop-filter:blur(28px) saturate(170%);backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--stroke);box-shadow:var(--sh)}
+
+/* water */
+#water{position:fixed;inset:0;z-index:0;overflow:hidden;background:var(--water,#0B3A5C);transition:background-color .35s}
+#water .ray{position:absolute;top:-15%;height:85%;background:linear-gradient(rgba(255,255,255,.55),rgba(255,255,255,0));filter:blur(14px);transform-origin:top center}
+#rays{position:absolute;inset:0;opacity:var(--rays,.3);transition:opacity .35s}
+#water .blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:var(--blob,.3);transition:opacity .35s}
+#torch{position:absolute;inset:0;opacity:0;background:radial-gradient(circle 190px at var(--tx,50%) var(--ty,40%),rgba(255,236,200,.24),rgba(255,236,200,.07) 55%,transparent 72%);transition:opacity .3s}
+#motes{position:absolute;inset:0;opacity:var(--motes,0);transition:opacity .6s}
+.mote{position:absolute;width:3px;height:3px;border-radius:50%;background:#7FF5E4;box-shadow:0 0 8px 2px rgba(110,240,220,.6);animation:drift var(--dur,14s) ease-in-out infinite alternate}
+@keyframes drift{from{transform:translate(0,0);opacity:.2}50%{opacity:1}to{transform:translate(var(--dx,20px),var(--dy,-40px));opacity:.3}}
+@media (prefers-reduced-motion: reduce){.mote{animation:none}#water{transition:none}}
+
+/* layout */
+#app{position:relative;z-index:1;height:100%;max-width:470px;margin:0 auto}
+#home{height:100%;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:14px;padding:16px 18px 6px;scrollbar-width:none}
+#home::-webkit-scrollbar{display:none}
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.top h1{margin:0;font-size:48px;line-height:.95;letter-spacing:-.01em}
+.preset{display:inline-flex;align-items:center;gap:4px;margin-top:4px;padding:4px 0;border:0;background:none;color:var(--ink2);font-size:14px;cursor:pointer;min-height:32px}
+.round{display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:24px;cursor:pointer;flex:none}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;padding:4px;border-radius:22px}
+.seg button{min-height:38px;border:1px solid transparent;border-radius:18px;background:transparent;color:var(--ink2);font-size:15px;font-weight:500;cursor:pointer;transition:background .2s}
+.seg button[aria-pressed="true"]{background:var(--sel);border-color:var(--stroke);color:var(--ink);font-weight:600;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.seg.small{border-radius:12px;padding:3px}
+.seg.small button{min-height:32px;border-radius:9px;font-size:14px;padding:0 10px}
+
+/* wheels */
+.wheels{position:relative;border-radius:30px;padding:12px 8px 10px}
+.wgrid{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.wlab{text-align:center;font-size:13px;color:var(--ink2);padding-bottom:2px}
+.band{position:absolute;left:4px;right:4px;top:calc(50% - 25px);height:50px;border-radius:17px;background:var(--glass2);border:1px solid var(--stroke);pointer-events:none}
+.wheel{position:relative;height:var(--wh,214px);touch-action:none;cursor:ns-resize;perspective:460px;-webkit-mask-image:linear-gradient(transparent,#000 28%,#000 72%,transparent);mask-image:linear-gradient(transparent,#000 28%,#000 72%,transparent);user-select:none;-webkit-user-select:none;border-radius:16px}
+.wi{position:absolute;left:0;right:0;top:50%;height:48px;margin-top:-24px;display:flex;align-items:center;justify-content:center;font-family:'Instrument Serif',Georgia,serif;font-size:42px;line-height:1;will-change:transform}
+.wi.warn{color:var(--warn)}
+.wunit{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--ink2);pointer-events:none}
+.whint{margin:6px 0 0;text-align:center;font-size:12px;color:var(--ink2)}
+
+.lvls{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px}
+.lvls::-webkit-scrollbar{display:none}
+.lchip{flex:none;display:flex;align-items:baseline;gap:6px;min-height:44px;padding:6px 14px;border-radius:22px;cursor:pointer;color:var(--ink);font-size:14px}
+.lchip .serif{font-size:22px}
+.lchip[aria-pressed="true"]{background:var(--glass2);outline:1.5px solid var(--ink);outline-offset:-1.5px}
+.lchip.ghost{background:transparent;box-shadow:none;border-style:dashed;color:var(--ink2);align-items:center;line-height:1}
+.modeline{display:inline-flex;align-items:center;gap:6px;margin-top:8px;min-height:30px;padding:3px 12px;border-radius:15px;border:1px solid var(--stroke);background:var(--glass);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;max-width:100%}
+.modeline b{font-weight:600}
+.modeline .gdot{flex:none;width:10px;height:10px;border-radius:5px;background:var(--g1)}
+.modeline{border-left:3px solid var(--g1)}
+.modeline span{color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{display:inline-flex;align-items:center;min-height:30px;padding:4px 11px;border-radius:15px;background:var(--glass);border:1px solid var(--stroke);font-size:13px}
+.pill.warn{background:var(--warnbg);border-color:transparent;color:var(--warn)}
+.pill.err{background:var(--errbg);border-color:transparent;color:var(--err)}
+.list{border-radius:24px;overflow:hidden}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:50px;padding:6px 18px;border:0;background:transparent;text-align:left;cursor:pointer;color:var(--ink);font-size:16px;position:relative}
+.row+.row{border-top:1px solid var(--line)}
+.row .v{color:var(--ink2);text-align:right;font-size:15px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .l{flex:none;max-width:62%}
+.row .sub{display:block;font-size:13px;color:var(--ink2);margin-top:1px}
+.row.danger{color:var(--err);justify-content:center}
+.row.act{color:var(--ink);font-weight:600;justify-content:center}
+.live{margin:0;display:flex;align-items:baseline;justify-content:center;gap:8px;min-height:36px;color:var(--ink2);font-size:15px}
+.live .serif{font-size:34px;color:var(--ink);line-height:1}
+.cta{display:flex;align-items:center;justify-content:center;width:100%;min-height:56px;border:0;border-radius:28px;background:var(--cta);color:var(--ctaink);font-size:17px;font-weight:600;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.22)}
+.grab{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;padding:8px 0 10px;border:0;background:none;color:var(--ink2);font-size:13px;cursor:pointer;touch-action:none}
+.grab i{display:block;width:40px;height:5px;border-radius:3px;background:currentColor;opacity:.6}
+
+/* plan page */
+.page{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;max-width:470px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 14px) 0 env(safe-area-inset-bottom,0px);transform:translateX(105%);transition:transform .32s cubic-bezier(.2,.8,.2,1);visibility:hidden}
+.page.open{transform:none;visibility:visible}
+.phead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 18px}
+.back{display:flex;align-items:center;min-height:42px;padding:0 16px;border-radius:21px;cursor:pointer;font-size:15px}
+.ctx{font-size:13px;color:var(--ink2);text-align:right}
+.tabs{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;margin:12px 18px 0;padding:4px;border-radius:22px}
+.tabs button{min-height:36px;min-width:0;padding:0 4px;border:1px solid transparent;border-radius:18px;background:transparent;color:var(--ink2);font-size:13.5px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tabs button[aria-selected="true"]{background:var(--sel);border-color:var(--stroke);color:var(--ink);font-weight:600}
+.pager{flex:1;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;margin-top:10px}
+.pager::-webkit-scrollbar{display:none}
+.pg{flex:0 0 100%;scroll-snap-align:start;overflow-y:auto;padding:4px 18px 28px;display:flex;flex-direction:column;gap:12px;scrollbar-width:none}
+.pg::-webkit-scrollbar{display:none}
+.big{display:flex;align-items:flex-end;justify-content:space-between}
+.big .lab{display:block;font-size:13px;color:var(--ink2)}
+.big .num{display:block;font-size:68px;line-height:.95}
+.big .r{text-align:right}
+.big .it{font-style:italic}
+.card{border-radius:26px;padding:14px 16px}
+.warns{display:flex;flex-direction:column;gap:6px}
+.wline{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-radius:16px;font-size:14px;background:var(--warnbg);color:var(--warn)}
+.wline.err{background:var(--errbg);color:var(--err)}
+.wline.info{background:var(--glass);color:var(--ink2);border:1px solid var(--stroke)}
+.wline b{font-weight:600;flex:none}
+.tbl{width:100%;border-collapse:collapse;font-size:15px}
+.tbl th{font-weight:400;font-size:12px;color:var(--ink2);text-align:right;padding:4px 0 6px}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tbl td{text-align:right;padding:8px 0;border-top:1px solid var(--line)}
+.tbl tr.sw td{color:var(--warn)}
+.tbl tr.lvl td{font-weight:600}
+.chart svg{display:block;width:100%;height:auto}
+.foot{font-size:12px;color:var(--ink2);text-align:center;margin:4px 8px 0}
+.gasc{display:flex;gap:14px;align-items:center}
+.gasc svg{flex:none}
+.gasc .t{font-size:17px;font-weight:600}
+.gasc .d{font-size:14px;color:var(--ink2);margin-top:2px}
+.gasc .w{font-size:13px;color:var(--warn);margin-top:3px}
+.gasc .e{font-size:13px;color:var(--err);margin-top:3px}
+.empty{padding:28px 10px;text-align:center;color:var(--ink2)}
+
+/* sheets */
+#scrim{position:fixed;inset:0;z-index:8;background:var(--scrim);opacity:0;pointer-events:none;transition:opacity .25s}
+#scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:9;max-width:470px;margin:0 auto;border-radius:32px 32px 0 0;background:var(--sheet);-webkit-backdrop-filter:blur(40px) saturate(180%);backdrop-filter:blur(40px) saturate(180%);border-top:1px solid var(--stroke);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 -20px 50px rgba(0,0,0,.25);transform:translateY(105%);transition:transform .34s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px);visibility:hidden}
+.sheet.open{transform:none;visibility:visible}
+.sheet.tall{height:calc(100% - env(safe-area-inset-top,0px) - 34px)}
+.shandle{display:flex;justify-content:center;padding:10px 0 4px;touch-action:none;cursor:grab}
+.shandle i{display:block;width:40px;height:5px;border-radius:3px;background:var(--ink2);opacity:.6}
+.shead{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:2px 14px 8px}
+.shead h2{margin:0;font-size:30px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shead .left{justify-self:start}.shead .right{justify-self:end}
+.pillbtn{display:flex;align-items:center;min-height:40px;padding:0 16px;border-radius:20px;border:1px solid var(--stroke);background:var(--glass2);color:var(--ink);font-size:15px;font-weight:600;cursor:pointer}
+.pillbtn.plain{font-weight:500}
+.sbody{flex:1;overflow-y:auto;padding:4px 16px 26px;scrollbar-width:none}
+.sbody::-webkit-scrollbar{display:none}
+.grp{margin-top:18px}
+.grp h3{margin:0 6px 6px;font-size:14px;font-weight:500;color:var(--ink2)}
+.grp .list{background:var(--glass);border:1px solid var(--stroke)}
+.gfoot{margin:6px 8px 0;font-size:13px;color:var(--ink2)}
+.toggle{position:relative;flex:none;width:51px;height:31px;border-radius:16px;border:0;background:rgba(120,130,140,.35);cursor:pointer;padding:0}
+.toggle::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:14px;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.25);transition:left .2s}
+.toggle[aria-checked="true"]{background:#248A3D}
+.toggle[aria-checked="true"]::after{left:22px}
+.mini{padding:16px 18px 10px}
+.mini h2{margin:0 0 4px;font-size:30px}
+.mini .hint{margin:0 0 12px;font-size:14px;color:var(--ink2)}
+.numrow{display:flex;align-items:center;gap:10px}
+.numrow input,.mini input[type=text]{flex:1;min-width:0;height:64px;border-radius:20px;border:1px solid var(--stroke);background:var(--glass2);color:var(--ink);font-family:'Instrument Serif',Georgia,serif;font-size:40px;text-align:center;padding:0 12px}
+.mini input[type=text]{font-family:'Geist',system-ui,sans-serif;font-size:20px;height:54px;text-align:left;width:100%}
+.stepb{flex:none;width:56px;height:56px;border-radius:28px;border:1px solid var(--stroke);background:var(--glass2);font-size:26px;cursor:pointer;color:var(--ink)}
+.mini .unit{font-size:15px;color:var(--ink2);flex:none}
+.btns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
+.btns .cta{min-height:52px;box-shadow:none}
+.btns .sec{min-height:52px;border-radius:26px;border:1px solid var(--stroke);background:var(--glass2);font-size:16px;cursor:pointer;color:var(--ink)}
+.theory{font-size:16px;line-height:1.55}
+.theory p{margin:0 0 12px;max-width:64ch}
+.err-msg{margin:8px 2px 0;font-size:14px;color:var(--err);min-height:18px}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);z-index:20;transform:translate(-50%,30px);opacity:0;padding:10px 18px;border-radius:20px;font-size:14px;pointer-events:none;transition:all .25s;white-space:nowrap}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.check{width:20px;text-align:center;flex:none}
+
+/* overlays: one blurred, darkened layer behind any sheet; sheets themselves don't blur */
+:root{--scrimbg:rgba(20,35,50,.4);--sheet2:rgba(242,246,249,.93);--pagebg:rgba(255,255,255,.2);--tog:#248A3D}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--scrimbg:rgba(2,10,20,.58);--sheet2:rgba(12,30,48,.88);--pagebg:rgba(2,12,24,.42)}}
+:root[data-theme="dark"],:root[data-look="dark"]{--scrimbg:rgba(2,10,20,.58);--sheet2:rgba(12,30,48,.88);--pagebg:rgba(2,12,24,.42)}
+:root[data-look="light"]{--scrimbg:rgba(20,35,50,.4);--sheet2:rgba(242,246,249,.93);--pagebg:rgba(255,255,255,.2)}
+:root[data-look="night"]{--ink:#FF5A4A;--ink2:rgba(255,104,88,.82);--glass:rgba(255,60,40,.07);--glass2:rgba(255,60,40,.14);--stroke:rgba(255,80,60,.24);--line:rgba(255,80,60,.16);--sh:none;--warn:#FFA07A;--warnbg:rgba(255,120,60,.14);--err:#FF3B30;--errbg:rgba(255,40,30,.16);--cta:#E0352B;--ctaink:#000000;--sel:rgba(255,80,60,.2);--base:#000000;--scrimbg:rgba(0,0,0,.66);--sheet2:rgba(16,0,0,.94);--pagebg:rgba(0,0,0,.35);--tog:#B3261E;color-scheme:dark}
+:root[data-look="night"] .toggle{background:rgba(255,80,60,.18)}
+:root[data-look="night"] .toggle[aria-checked="true"]{background:var(--tog)}
+:root[data-look="night"] .toggle::after{background:#2A0503}
+.toggle[aria-checked="true"]{background:var(--tog)}
+#scrim{background:var(--scrimbg);-webkit-backdrop-filter:blur(26px) saturate(130%);backdrop-filter:blur(26px) saturate(130%);visibility:hidden;transition:opacity .22s,visibility 0s .22s}
+#scrim.on{visibility:visible;transition:opacity .22s}
+.sheet{background:var(--sheet2);-webkit-backdrop-filter:none;backdrop-filter:none;will-change:transform}
+#settings{transition:transform .34s cubic-bezier(.2,.8,.2,1),filter .2s}
+#settings.behind{filter:brightness(.45) blur(2px)}
+body.over #home .glass,body.over .page .glass{-webkit-backdrop-filter:none;backdrop-filter:none}
+.page{background:var(--pagebg)}
+#home{transition:opacity .2s}
+body.plan #home{opacity:0;visibility:hidden;transition:opacity .2s,visibility 0s .2s}
+:root{--g1:#1F6FB2;--g2:#6B4BC8;--g3:#9A5A00;--g4:#0E8A63;--g5:#B23A2E;--g6:#55626B;--okc:#1D7A3A;--okbg:rgba(40,160,80,.14)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--g1:#7CC8FF;--g2:#C3A6FF;--g3:#FFC46B;--g4:#7FF5C8;--g5:#FF9B8F;--g6:#E9EEF2;--okc:#8FF0B0;--okbg:rgba(80,220,130,.16)}}
+:root[data-theme="dark"],:root[data-look="dark"]{--g1:#7CC8FF;--g2:#C3A6FF;--g3:#FFC46B;--g4:#7FF5C8;--g5:#FF9B8F;--g6:#E9EEF2;--okc:#8FF0B0;--okbg:rgba(80,220,130,.16)}
+:root[data-look="light"]{--g1:#1F6FB2;--g2:#6B4BC8;--g3:#9A5A00;--g4:#0E8A63;--g5:#B23A2E;--g6:#55626B;--okc:#1D7A3A;--okbg:rgba(40,160,80,.14)}
+:root[data-look="night"]{--g1:#FF5A4A;--g2:#FF9C80;--g3:#C2342A;--g4:#FFC2B0;--g5:#E06A5C;--g6:#8F2A20;--okc:#FF9C80;--okbg:rgba(255,120,90,.14)}
+.pill.ok{background:var(--okbg);border-color:transparent;color:var(--okc)}
+.ctrls{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between}
+.ctrls .seg{flex:1 1 140px;min-width:0}
+.tbl tr.tap{cursor:pointer}
+.tbl tr.tap:active td{opacity:.6}
+.metro{padding:10px 16px 14px}
+.st{position:relative;display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:10px;min-height:54px}
+.st[data-si]{cursor:pointer}
+.st .ln{position:absolute;left:14px;top:0;bottom:0;width:6px;border-radius:3px;background:linear-gradient(var(--c) 0 50%,var(--c2) 50% 100%)}
+.st.first .ln{top:50%;background:var(--c2)}
+.st.end .ln{bottom:50%;background:var(--c)}
+.st .dot{position:relative;grid-column:1;justify-self:center;width:18px;height:18px;border-radius:50%;background:var(--base);border:4px solid var(--c2)}
+.st.sw .dot{width:26px;height:26px;border-width:5px;box-shadow:0 0 0 3px var(--base),0 0 0 6px var(--c2)}
+.st.end .dot{border-color:var(--c);width:22px;height:22px}
+.st .tx{display:flex;flex-direction:column;min-width:0}
+.st .dep{font-size:26px;line-height:1.05}
+.st .sub{font-size:13px;color:var(--ink2)}
+.st .rt{font-size:15px;color:var(--ink2)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:13px;color:var(--ink2)}
+.legend i{display:inline-block;width:14px;height:6px;border-radius:3px;margin-right:6px;vertical-align:middle}
+.card .d b{font-weight:600;color:var(--ink)}
+#home>*{flex-shrink:0}
+button.pill{cursor:pointer;font:inherit;font-size:13px;color:inherit}
+.pill.ghost{background:transparent;border-style:dashed;color:var(--ink2)}
+.row.alert{color:var(--err);font-weight:600;font-size:14px;cursor:default;background:var(--errbg)}
+.simp{display:flex;flex-direction:column;gap:10px;padding:12px 14px}
+.srow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px;font-size:14px}
+.srow .seg{flex:1 1 210px;max-width:100%}
+.fw{position:relative;padding-left:34px}
+.fw::before{content:"";position:absolute;left:14px;top:0;bottom:0;width:6px;background:var(--c)}
+.fork>summary{list-style:none;position:relative;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:46px;padding-left:22px;cursor:pointer;font-size:14px;color:var(--ink2)}
+.fork>summary::-webkit-details-marker{display:none}
+.fork>summary::before{content:"";position:absolute;left:-14px;top:-4px;width:26px;height:26px;border-left:4px dashed var(--b);border-bottom:4px dashed var(--b);border-bottom-left-radius:16px}
+.fork>summary::after{content:"›";position:absolute;left:12px;top:50%;transform:translateY(-55%);color:var(--b);font-size:16px;transition:transform .2s}
+.fork[open]>summary::after{transform:translateY(-55%) rotate(90deg)}
+.fork .ftx b{color:var(--ink);font-weight:600}
+.fork .fdt{flex:none;font-size:15px;color:var(--ink)}
+.fork .fdt em{font-style:normal;color:var(--warn);margin-left:4px}
+.branch{margin:0 0 6px 6px;padding:2px 0 4px 2px;border-left:2px dashed var(--line);border-radius:0 0 0 12px}
+.branch .st .ln{background:linear-gradient(var(--c) 0 50%,var(--c2) 50% 100%);opacity:.85}
+.topbtns{display:flex;gap:8px}
+.lchip .dl{font-size:12px;color:var(--ink2);margin-left:4px}
+.lchip .ed{font-size:13px;color:var(--ink2);margin-left:4px}
+.lprof{padding:8px 10px 4px}
+.lpw{margin:4px 2px 2px;font-size:13px;color:var(--err)}
+.scen{display:flex;flex-direction:column;gap:4px;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+.sc{display:grid;grid-template-columns:22px 1fr auto;gap:6px;font-size:13px;color:var(--ink2);align-items:baseline}
+.sc b{color:var(--ink)}
+.sc em{font-style:normal;color:var(--ink);font-weight:600}
+.metro svg .mst{cursor:pointer}
+.metro svg .mst:focus{outline:none}
+.metro svg .mst:focus circle:first-child{stroke:var(--ink);stroke-width:2}
+.ctab tr.cur td{font-weight:600;color:var(--ink)}
+.ctab tr.cur td:first-child::before{content:"● ";color:var(--warn)}
+#coach{position:fixed;inset:0;z-index:40}
+#coach[hidden]{display:none}
+#spot{position:fixed;left:0;top:0;border-radius:16px;box-shadow:0 0 0 200vmax rgba(0,0,0,.66);pointer-events:none;border:2px solid rgba(255,255,255,.7);will-change:transform,width,height;contain:strict}
+#ctip{will-change:transform;transition:opacity .15s}
+#ctip{position:fixed;left:16px;right:16px;max-width:440px;margin:0 auto;padding:14px 16px;border-radius:22px;background:var(--sheet2)}
+#ctip p{margin:0 0 10px;font-size:16px;line-height:1.45}
+.crow{display:flex;align-items:center;gap:8px}
+.crow #cnum{flex:1;font-size:13px;color:var(--ink2)}
+.pillbtn:disabled{opacity:.4}
+.seg{min-width:0}
+.seg button{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.seg.small button{padding:0 6px}
+.row.segrow{flex-wrap:wrap;padding-top:8px;padding-bottom:8px}
+.row.segrow .seg{flex:1 1 200px;max-width:100%}
+.btns .cta,.btns .sec{min-width:0;padding:0 10px}
+.phead .ctx{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shead h2{min-width:0}
+.dset{border-radius:24px;overflow:hidden}
+.dset>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:54px;padding:8px 16px 8px 18px;cursor:pointer}
+.dset>summary::-webkit-details-marker{display:none}
+.dset>summary::after{content:"›";font-size:20px;color:var(--ink2);transition:transform .2s;flex:none}
+.dset[open]>summary::after{transform:rotate(90deg)}
+.dset .dl{font-size:16px;flex:none}
+.dset .dv{font-size:14px;color:var(--ink2);text-align:right;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.dset .wdot{display:inline-block;width:8px;height:8px;border-radius:4px;background:var(--warn);margin-right:6px;vertical-align:middle}
+.dbody{display:flex;flex-direction:column;gap:12px;padding:2px 10px 14px}
+.dset .glass{-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none}
+.dset .preset.glass{align-self:flex-start;margin:0 4px}
+.wbtn{border:0;background:var(--warnbg);color:var(--warn);font:inherit;font-size:14px;min-height:34px;padding:0 12px;border-radius:17px;cursor:pointer}
+.hwarns{max-height:38vh;overflow-y:auto}
+.slide{position:relative;height:62px;border-radius:31px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+.slide .fill{position:absolute;inset:0 auto 0 0;width:0;background:var(--sel)}
+.slide .txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-left:58px;font-size:17px;font-weight:500;color:var(--ink);background:linear-gradient(100deg,var(--ink2) 0%,var(--ink2) 40%,var(--ink) 50%,var(--ink2) 60%,var(--ink2) 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shine 2.6s linear infinite}
+@keyframes shine{from{background-position:100% 0}to{background-position:-150% 0}}
+@media (prefers-reduced-motion: reduce){.slide .txt{animation:none;-webkit-text-fill-color:var(--ink)}}
+.slide .knob{position:absolute;left:5px;top:5px;width:52px;height:52px;border-radius:26px;background:var(--cta);color:var(--ctaink);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.3);will-change:transform}
+.slide.go .knob{transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.slide.go .fill{transition:width .25s cubic-bezier(.2,.8,.2,1)}
+.slide:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.page .glass,.page .seg.small,.sheet .glass{-webkit-backdrop-filter:none;backdrop-filter:none}
+.page .card.glass,.page .tabs{background:var(--glass2)}
+.pg{contain:content;-webkit-overflow-scrolling:touch}
+.page{will-change:transform}
+.mscroll{overflow-x:auto;overflow-y:hidden;margin:0 -6px;padding:0 6px;scrollbar-width:thin}
+.mscroll svg{display:block;max-width:none}
+.logo{display:flex;align-items:flex-end;gap:10px;margin:0}
+.logo svg{flex:none;margin-bottom:2px}
+.logo .serif{font-size:46px;line-height:.92;letter-spacing:-.01em}
+.preset.glass{padding:5px 12px;border-radius:15px;margin-top:8px;color:var(--ink);font-size:14px}
+.whyhead{display:flex;align-items:baseline;gap:12px}
+.whyhead h2{margin:0;font-size:46px}
+.whyt{font-size:34px}
+.whyn{margin-left:auto;font-size:15px;color:var(--ink2)}
+</style>
+</head>
+<body>
+<div id="water" aria-hidden="true">
+  <div id="rays">
+    <div class="ray" style="left:8%;width:70px;transform:rotate(14deg)"></div>
+    <div class="ray" style="left:42%;width:38px;transform:rotate(7deg)"></div>
+    <div class="ray" style="left:66%;width:96px;transform:rotate(-6deg)"></div>
+  </div>
+  <div class="blob" style="left:-80px;bottom:-40px;width:320px;height:320px;background:#2BB3C0"></div>
+  <div class="blob" style="right:-90px;top:36%;width:270px;height:270px;background:#5B6CFF"></div>
+  <div id="motes"></div>
+  <div id="torch"></div>
+</div>
+<main id="app">
+  <section id="home" aria-label="Immersione">
+    <div class="top">
+      <div>
+        <h1 class="logo" aria-label="Bathys">
+          <svg width="34" height="54" viewBox="0 0 34 54" aria-hidden="true">
+            <path d="M1 8 q4 -5 8 0 t8 0 t8 0 t8 0" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/>
+            <line x1="17" y1="9" x2="17" y2="41" stroke="var(--ink)" stroke-width="1.6"/>
+            <line x1="11" y1="17" x2="23" y2="17" stroke="var(--ink)" stroke-width="1.6" stroke-linecap="round" opacity=".85"/>
+            <line x1="12.5" y1="25" x2="21.5" y2="25" stroke="var(--ink)" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>
+            <line x1="14" y1="33" x2="20" y2="33" stroke="var(--ink)" stroke-width="1.6" stroke-linecap="round" opacity=".38"/>
+            <path d="M17 40 L12.2 48.5 A5.2 5.2 0 1 0 21.8 48.5 Z" fill="var(--ink)"/>
+          </svg>
+          <span class="serif">Bathys</span>
+        </h1>
+        <button class="modeline" id="modeLine" type="button" aria-label="Modalità e gas: tocca per le impostazioni immersione, tieni premuto per passare tra circuito aperto e CCR"></button>
+      </div>
+      <div class="topbtns"><button class="round glass" id="btnInfo" type="button" aria-label="Aiuto: tutorial e guida"><span class="serif" style="font-size:25px;font-style:italic;line-height:1">i</span></button>
+      <button class="round glass" id="btnSettings" type="button" aria-label="Impostazioni">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="9" cy="7" r="2.4" fill="var(--base)"/><circle cx="15" cy="17" r="2.4" fill="var(--base)"/></svg>
+      </button></div>
+    </div>
+    <div class="wheels glass">
+      <div class="wgrid">
+        <div class="wlab">Profondità</div><div class="wlab">Minuto di stacco</div>
+      </div>
+      <div class="wgrid" style="margin-top:2px">
+        <div class="band"></div>
+        <div id="wDepth"></div>
+        <div id="wTime"></div>
+      </div>
+      <p class="whint">Tocca un numero per scriverlo</p>
+    </div>
+    <div class="lvls" id="levels" aria-label="Settori"></div>
+    <div id="lvlProf"></div>
+    <details class="dset glass" id="diveSet">
+      <summary><span class="dl">Impostazioni immersione</span><span class="dv" id="dsSum"></span></summary>
+      <div class="dbody">
+        <div class="seg glass" role="group" aria-label="Modalità">
+          <button type="button" data-mode="oc">Circuito aperto</button>
+          <button type="button" data-mode="ccr">CCR</button>
+        </div>
+        <div class="pills" id="pills"></div>
+        <div class="list glass" id="homeList"></div>
+        <button class="preset glass" id="presetBtn" type="button">Piani preimpostati ›</button>
+      </div>
+    </details>
+    <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px;padding-top:4px">
+      <p class="live" id="live" aria-live="polite"></p>
+      <div class="hwarns" id="homeWarns" hidden></div>
+      <div class="slide glass" id="btnCalc" role="button" tabindex="0" aria-label="Scorri per calcolare il piano. Con la tastiera premi Invio">
+        <div class="fill"></div><span class="txt">Scorri per calcolare</span>
+        <span class="knob" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+      </div>
+    </div>
+    <button class="grab" id="grab" type="button"><i></i><span>Scorri in su per le impostazioni</span></button>
+  </section>
+</main>
+<section class="page" id="plan" aria-label="Piano">
+  <div class="phead">
+    <button class="back glass" id="btnBack" type="button">‹ Immersione</button>
+    <span class="ctx" id="planCtx"></span>
+    <button class="round glass" id="planInfo" type="button" aria-label="Aiuto: tutorial e guida" style="width:42px;height:42px"><span class="serif" style="font-size:23px;font-style:italic;line-height:1">i</span></button>
+  </div>
+  <div class="tabs glass" role="tablist" id="tabs"></div>
+  <div class="pager" id="pager"></div>
+</section>
+<div id="scrim"></div>
+<div class="sheet tall" id="settings" role="dialog" aria-modal="true" aria-label="Impostazioni">
+  <div class="shandle" id="setHandle"><i></i></div>
+  <div class="shead"><div class="left" id="setLeft"></div><h2 class="serif" id="setTitle">Impostazioni</h2><div class="right" style="display:flex;gap:6px"><button class="pillbtn plain" type="button" id="setInfo" aria-label="Aiuto"><span class="serif" style="font-size:20px;font-style:italic">i</span></button><button class="pillbtn" type="button" id="setDone">Fine</button></div></div>
+  <div class="sbody" id="setBody"></div>
+</div>
+<div class="sheet" id="mini" role="dialog" aria-modal="true"><div class="shandle"><i></i></div><div class="mini" id="miniBody"></div></div>
+<div id="coach" hidden><div id="spot"></div><div id="ctip" class="glass" role="dialog" aria-live="polite"><p id="ctxt"></p><div class="crow"><span id="cnum"></span><button type="button" class="pillbtn plain" id="cskip">Salta</button><button type="button" class="pillbtn plain" id="cprev">Indietro</button><button type="button" class="pillbtn" id="cnext">Avanti</button></div></div></div>
+<div id="toast" class="glass" role="status"></div>
+<script>
+'use strict';
+const APP_VERSION='0.9.1';
+/* ===== ENGINE START ===== */
+const N2HT=[5.0,8.0,12.5,18.5,27.0,38.3,54.3,77.0,109.0,146.0,187.0,239.0,305.0,390.0,498.0,635.0];
+const N2A=[1.1696,1.0,0.8618,0.7562,0.6200,0.5043,0.4410,0.4000,0.3750,0.3500,0.3295,0.3065,0.2835,0.2610,0.2480,0.2327];
+const N2B=[0.5578,0.6514,0.7222,0.7825,0.8126,0.8434,0.8693,0.8910,0.9092,0.9222,0.9319,0.9403,0.9477,0.9544,0.9602,0.9653];
+const HEHT=[1.88,3.02,4.72,6.99,10.21,14.48,20.53,29.11,41.20,55.19,70.69,90.34,115.29,147.42,188.24,240.03];
+const HEA=[1.6189,1.3830,1.1919,1.0458,0.9220,0.8205,0.7305,0.6502,0.5950,0.5545,0.5333,0.5189,0.5181,0.5176,0.5172,0.5119];
+const HEB=[0.4770,0.5747,0.6527,0.7223,0.7582,0.7957,0.8279,0.8553,0.8757,0.8903,0.8997,0.9073,0.9122,0.9171,0.9217,0.9267];
+const PWV=0.0627, TOL=0.03;
+const fmt=(n,k=1)=>Number(n).toFixed(k).replace('.',',');
+
+function envOf(s){
+  const ps=1.01325*Math.pow(1-2.25577e-5*(s.env.alt||0),5.25588);
+  const bpm=s.env.water==='salt'?0.10101:0.0980665;
+  return {ps,bpm,P:d=>ps+Math.max(0,d)*bpm,D:p=>(p-ps)/bpm};
+}
+const H2HT=N2HT.map(t=>t/3.742);
+const h2Of=g=>(g&&g.h2)||0;
+function gasName(g){
+  const x=h2Of(g);
+  if(x>0) return g.he>0?'Hydreliox '+g.o2+'/'+g.he+'/'+x:'Hydrox '+g.o2+'/'+x;
+  if(g.o2>=100) return 'Ossigeno';
+  if(g.he<=0) return g.o2===21?'Aria':'EAN'+g.o2;
+  if(g.o2+g.he>=100) return 'Heliox '+g.o2+'/'+g.he;
+  return 'Trimix '+g.o2+'/'+g.he;
+}
+function ppO2(E,g,d){return E.P(d)*g.o2/100;}
+function modOf(E,g,lim){return Math.max(0,(lim/(g.o2/100)-E.ps)/E.bpm);}
+function minDepthOf(E,g,min){return Math.max(0,(min/(g.o2/100)-E.ps)/E.bpm);}
+function endOf(E,s,g,d){
+  const P=E.P(d), fo=g.o2/100, fh=g.he/100, fx=h2Of(g)/100, fn=Math.max(0,1-fo-fh-fx);
+  const narc=s.lim.o2Narc?(fo+fn+0.55*fx):(fn+0.55*fx)/0.7902;
+  return Math.max(0,(P*narc-E.ps)/E.bpm);
+}
+function densOf(E,g,d){
+  const fo=g.o2/100, fh=g.he/100, fx=h2Of(g)/100, fn=Math.max(0,1-fo-fh-fx);
+  return (fo*1.429+fh*0.1786+fx*0.0899+fn*1.2506)*E.P(d)/1.01325;
+}
+function cnsLim(p){
+  if(p<=0.5) return Infinity;
+  if(p<0.6) return 720*0.1/(p-0.5);
+  if(p>=1.6) return 45*Math.pow(0.5,(p-1.6)/0.05);
+  const T=[[0.6,720],[0.7,570],[0.8,450],[0.9,360],[1.0,300],[1.1,240],[1.2,210],[1.3,180],[1.4,150],[1.5,120],[1.6,45]];
+  for(let i=0;i<T.length-1;i++){
+    if(p<=T[i+1][0]){const f=(p-T[i][0])/(T[i+1][0]-T[i][0]);return T[i][1]+(T[i+1][1]-T[i][1])*f;}
+  }
+  return 45;
+}
+function abOf(i,pn,ph,px){
+  const pt=pn+ph+px;
+  return [(N2A[i]*pn+HEA[i]*(ph+px))/pt,(N2B[i]*pn+HEB[i]*(ph+px))/pt,pt];
+}
+
+class Sim{
+  constructor(s,E){
+    this.s=s;this.E=E;
+    const p0=(E.ps-PWV)*0.7902;
+    this.pn=new Array(16).fill(p0);this.ph=new Array(16).fill(0);this.px=new Array(16).fill(0);
+    this.rt=0;this.d=0;this.cns=0;this.otu=0;this.maxPpo2=0;
+    this.prof=[[0,0]];this.use={};this.useAsc={};
+  }
+  clone(){const c=Object.create(Sim.prototype);Object.assign(c,this);c.pn=this.pn.slice();c.ph=this.ph.slice();c.px=this.px.slice();c.prof=this.prof.map(p=>p.slice());c.use=Object.assign({},this.use);c.useAsc=Object.assign({},this.useAsc);return c;}
+  insp(d,b){
+    const P=this.E.P(d), pa=Math.max(0,P-PWV);
+    if(b.k==='oc'){
+      const fo=b.g.o2/100, fh=b.g.he/100, fx=h2Of(b.g)/100, fn=Math.max(0,1-fo-fh-fx);
+      return {n:pa*fn,h:pa*fh,x:pa*fx,o:P*fo};
+    }
+    const fo=b.dil.o2/100, fh=b.dil.he/100, fx=h2Of(b.dil)/100, fn=Math.max(0,1-fo-fh-fx);
+    let o=Math.min(b.sp,pa); o=Math.max(o,fo*pa);
+    const inert=Math.max(0,pa-o), fi=fn+fh+fx;
+    return {n:fi>0?inert*fn/fi:0,h:fi>0?inert*fh/fi:0,x:fi>0?inert*fx/fi:0,o:Math.min(o,P)};
+  }
+  tick(dt,d,b,sac,key,asc){
+    const ip=this.insp(d,b);
+    for(let i=0;i<16;i++){
+      this.pn[i]+=(ip.n-this.pn[i])*(1-Math.pow(2,-dt/N2HT[i]));
+      this.ph[i]+=(ip.h-this.ph[i])*(1-Math.pow(2,-dt/HEHT[i]));
+      if(ip.x>0||this.px[i]>0) this.px[i]+=(ip.x-this.px[i])*(1-Math.pow(2,-dt/H2HT[i]));
+    }
+    const o=ip.o;
+    if(o>this.maxPpo2) this.maxPpo2=o;
+    this.cns+=dt/cnsLim(o)*100;
+    if(o>0.5) this.otu+=dt*Math.pow((o-0.5)/0.5,0.8333);
+    if(key&&sac){
+      const l=sac*this.E.P(d)*dt;
+      this.use[key]=(this.use[key]||0)+l;
+      if(asc) this.useAsc[key]=(this.useAsc[key]||0)+l;
+    }
+  }
+  move(to,rate,bf,sac,kf,asc){
+    const dist=Math.abs(to-this.d);
+    if(dist<1e-9) return;
+    const T=dist/rate, n=Math.max(1,Math.ceil(T/0.1)), dt=T/n, from=this.d;
+    for(let j=0;j<n;j++){
+      const dm=from+(to-from)*(j+0.5)/n, b=bf(dm);
+      this.tick(dt,dm,b,sac,kf?kf(dm,b):null,asc);
+    }
+    this.d=to;this.rt+=T;this.prof.push([this.rt,to]);
+  }
+  stay(T,b,sac,key,asc){
+    if(T<=0) return;
+    this.tick(T,this.d,b,sac,key,asc);
+    this.rt+=T;this.prof.push([this.rt,this.d]);
+  }
+  ceilP(gf){
+    let m=0;
+    for(let i=0;i<16;i++){
+      const [a,b,pt]=abOf(i,this.pn[i],this.ph[i],this.px[i]);
+      if(pt<=0) continue;
+      const tol=(pt-a*gf)/(gf/b+1-gf);
+      if(tol>m) m=tol;
+    }
+    return m;
+  }
+  ceilD(gf){return this.E.D(this.ceilP(gf));}
+  pcts(d){
+    const P=this.E.P(d), out=[];
+    for(let i=0;i<16;i++){const [a,b,pt]=abOf(i,this.pn[i],this.ph[i],this.px[i]);const M=P/b+a;out.push(pt>0?(pt-P)/(M-P)*100:0);}
+    return out;
+  }
+  lead(gf,d){
+    let best=0,m=-Infinity;
+    for(let i=0;i<16;i++){
+      const [a,b,pt]=abOf(i,this.pn[i],this.ph[i],this.px[i]);
+      if(pt<=0) continue;
+      const tol=(pt-a*gf)/(gf/b+1-gf);
+      if(tol>m){m=tol;best=i;}
+    }
+    const i=best, pn=this.pn[i], ph=this.ph[i], px=this.px[i];
+    const [a,b,pt]=abOf(i,pn,ph,px), P=this.E.P(d), M=P/b+a;
+    return {i,htN:N2HT[i],htH:HEHT[i],pn,ph,px,pct:(pt-P)/(M-P)*100,gf:gf*100};
+  }
+}
+
+function bailoutGases(s){
+  if(s.ccr.bailout&&s.ccr.bailout.length) return s.ccr.bailout;
+  const dil={id:'__dil',o2:s.ccr.dil.o2,he:s.ccr.dil.he,role:'fondo',sw:null,cyl:null,n:1,virtual:true};
+  return [dil,...s.gases.filter(g=>g.role!=='fondo')];
+}
+
+const H2CFG=s=>Object.assign({o2max:4,step:2,wash:10,stages:3,cyl:'s80'},s.h2cfg||{});
+function isHydroOC(s){return !!s.h2exp&&s.mode==='oc'&&s.gases.some(g=>g.role==='fondo'&&h2Of(g)>0);}
+/* best breathing mix for depth d: O2 from the ppO2 limit, helium from END and density */
+function bestMix(E,s,d,lim,maxO2){
+  const P=E.P(d);
+  const f=Math.min(1,lim/P);
+  let o2=f>=0.97?100:Math.max(1,Math.floor(100*f+1e-6));
+  if(maxO2!=null) o2=Math.min(o2,maxO2);
+  const fo=o2/100, Pend=E.P(s.lim.endMax);
+  let fn=s.lim.o2Narc?Math.max(0,Pend/P-fo):Math.max(0,Pend/P*0.7902);
+  fn=Math.min(fn,1-fo);
+  let he=Math.max(0,Math.ceil(100*(1-fo-fn)-1e-9));
+  if(o2+he>100) he=100-o2;
+  while(he<100-o2&&densOf(E,{o2,he},d)>s.lim.densMax) he++;
+  return {o2,he,h2:0};
+}
+/* hydreliox: the bottom mix and the number of stages are the input, the stages are computed here */
+function hydroChain(s,E){
+  E=E||envOf(s);
+  const c=H2CFG(s), L=s.lim, I=s.algo.stopInt;
+  const bot=s.gases.find(g=>g.role==='fondo'&&h2Of(g)>0);
+  if(!bot) return null;
+  const dH2=I*Math.ceil(minDepthOf(E,bot,L.ppo2Min)/I)+I;
+  const tO2=Math.min(Math.max(bot.o2+1,bot.o2+c.step),Math.max(bot.o2+1,c.o2max));
+  const trans={id:'__h2t',o2:tO2,he:100-tO2,h2:0,role:'viaggio',sw:null,cyl:c.cyl,n:1,auto:true,trans:true};
+  const gases=[bot,trans], N=Math.max(1,Math.round(c.stages)), n2=N-1;
+  const Pa=E.P(minDepthOf(E,trans,L.ppo2Min)), Pb=E.P(Math.max(3,s.algo.lastStop)), P21=E.P(21)+1e-9;
+  for(let k=0;k<n2;k++){
+    const Pk=n2===1?Pa:Pa*Math.pow(Pb/Pa,k/(n2-1)), deco=Pk<=P21;
+    const m=bestMix(E,s,Math.max(0,E.D(Pk)),deco?L.ppo2Deco:L.ppo2Bottom);
+    if(gases.some(g=>g.o2===m.o2)) continue;
+    gases.push({id:'__h2s'+k,o2:m.o2,he:m.he,h2:0,role:deco?'deco':'viaggio',sw:null,cyl:c.cyl,n:1,auto:true});
+  }
+  return {gases,bot,trans,dH2};
+}
+function effGases(s){if(isHydroOC(s)){const h=hydroChain(s);if(h) return h.gases;}return s.gases;}
+function bestDil(E,s,d){
+  const c=H2CFG(s), sp=s.ccr.spHigh, safe=Math.max(0,(sp/(c.o2max/100)-E.ps)/E.bpm);
+  if(s.h2exp&&d>=safe){
+    const P=E.P(d), o2=Math.max(1,Math.min(c.o2max-1,Math.floor(100*1.0/P)));
+    const Pend=E.P(s.lim.endMax), fo=o2/100;
+    let fx=Math.max(0,Math.min(1-fo,((s.lim.o2Narc?Pend/P-fo:Pend/P*0.7902))/0.55));
+    let h2=Math.floor(100*fx);
+    return {o2,he:100-o2-h2,h2,safe};
+  }
+  const m=bestMix(E,s,d,1.1,21);
+  return {o2:m.o2,he:m.he,h2:0,safe};
+}
+function plan(s,opt){
+  opt=opt||{};
+  const E=envOf(s), A=s.algo, R=s.rates, L=s.lim, C=s.cons, HC=H2CFG(s);
+  const sim=new Sim(s,E), W=[], rows=[];
+  const ccrDown=s.mode==='ccr', ascOC=!ccrDown||!!opt.bailout;
+  const dd=opt.dd||0, dtx=opt.dt||0;
+  const levels=s.levels.map(l=>({d:Math.max(1,Math.min(400,l.d+dd)),t:l.t+dtx,dil:l.dil||null}));
+  const hydro=!ccrDown&&isHydroOC(s), H=hydro?hydroChain(s,E):null;
+  const ocGases=ccrDown?(opt.bailout?bailoutGases(s):[]):(hydro?H.gases:s.gases);
+  if(!ccrDown&&!ocGases.length) return {error:'Aggiungi almeno un gas nelle impostazioni.'};
+  if(!ccrDown&&!ocGases.some(g=>g.role!=='deco')) return {error:'Serve almeno un gas di fondo o da viaggio.'};
+  const stressF=opt.bailout?C.stress:1;
+  const sacB=C.sacBottom*stressF, sacD=C.sacDeco*stressF;
+  const downSet=ocGases.filter(g=>g.role!=='deco');
+  const usable=(g,d,lim)=>{const p=ppO2(E,g,d);return p>=L.ppo2Min-1e-9&&p<=lim+TOL;};
+  let pickDown=d=>{
+    const ok=downSet.filter(g=>usable(g,d,L.ppo2Bottom));
+    const f=ok.find(g=>g.role==='fondo');
+    if(f) return f;
+    if(ok.length) return ok.slice().sort((a,b)=>b.o2-a.o2)[0];
+    return downSet.find(g=>g.role==='fondo')||downSet[0]||ocGases[0];
+  };
+  if(hydro){
+    pickDown=d=>{
+      if(d>=H.dH2-1e-6) return H.bot;
+      const ok=H.gases.filter(g=>g!==H.bot&&!g.trans&&g.role!=='deco'&&usable(g,d,L.ppo2Bottom));
+      if(ok.length) return ok.sort((a,b)=>b.o2-a.o2)[0];
+      if(usable(H.trans,d,L.ppo2Bottom)) return H.trans;
+      return H.gases.find(g=>g!==H.bot&&!g.trans&&g.role!=='deco')||H.trans;
+    };
+  }
+  /* CCR: diluent per sector, hydrogen only where the loop stays below the O2 limit */
+  const multiDil=ccrDown&&levels.some(l=>l.dil);
+  const safeD=sp=>Math.max(0,(sp/(HC.o2max/100)-E.ps)/E.bpm);
+  let spHighOn=false, curDil=s.ccr.dil, tgtDil=s.ccr.dil, transDil=null;
+  const ccrB=d=>{
+    if(!spHighOn&&d>=s.ccr.spSwitch) spHighOn=true;
+    const sp=spHighOn?s.ccr.spHigh:s.ccr.spLow;
+    let dl=tgtDil;
+    if(h2Of(dl)>0&&d<safeD(sp)){
+      if(h2Of(curDil)===0&&ppO2(E,curDil,d)<=1.6+TOL) dl=curDil;
+      else{if(!transDil){const m=bestMix(E,s,safeD(s.ccr.spHigh),1.1,21);transDil={o2:m.o2,he:m.he,h2:0,auto:true};}dl=transDil;}
+    }
+    return {k:'ccr',sp,dil:dl};
+  };
+  const loopLabel=(sp,dil)=>'Loop '+fmt(sp,1)+(multiDil||h2Of(dil)>0?' ('+gasName(dil)+')':'');
+  for(let i=0;i<levels.length;i++){
+    const lv=levels[i], rate=lv.d>=sim.d?R.desc:R.asc;
+    if(ccrDown){
+      tgtDil=lv.dil||s.ccr.dil;
+      if(h2Of(tgtDil)>0){
+        const sd=safeD(s.ccr.spHigh);
+        if(lv.d<sd-1e-6){W.push({lvl:'err',kind:'h2',t:'PERICOLO DI MORTE: settore '+(i+1)+' a '+lv.d+' m con diluente '+gasName(tgtDil)+': il loop avrebbe '+fmt(s.ccr.spHigh/E.P(lv.d)*100,1)+'% di ossigeno con idrogeno. Profondità minima sicura '+Math.ceil(sd)+' m.'});tgtDil=curDil;}
+      }
+      sim.move(lv.d,rate,ccrB,0,null,false);
+    }else if(hydro&&lv.d>H.dH2&&sim.d<H.dH2-1e-6){
+      sim.move(H.dH2,rate,d=>({k:'oc',g:pickDown(Math.min(d,H.dH2-0.01))}),sacB,(d,b)=>b.g.id,false);
+      sim.stay(HC.wash,{k:'oc',g:H.trans},sacB,H.trans.id,false);
+      rows.push({k:'wash',d:H.dH2,dur:HC.wash,rt:sim.rt,gas:gasName(H.trans),gid:H.trans.id});
+      sim.move(lv.d,rate,d=>({k:'oc',g:pickDown(d)}),sacB,(d,b)=>b.g.id,false);
+    }else sim.move(lv.d,rate,d=>({k:'oc',g:pickDown(d)}),sacB,(d,b)=>b.g.id,false);
+    let hold=lv.t-sim.rt;
+    if(hold<-1e-6){
+      W.push({lvl:'err',kind:'timing',t:'Settore '+(i+1)+': arrivi a '+lv.d+' m al minuto '+fmt(sim.rt,1)+', dopo il minuto di stacco '+lv.t+'.'});
+      hold=0;
+    }
+    if(ccrDown){
+      spHighOn=true;
+      const b=ccrB(lv.d);curDil=b.dil;
+      sim.stay(hold,b,0,null,false);
+      rows.push({k:'lvl',d:lv.d,dur:hold,rt:sim.rt,gas:loopLabel(b.sp,b.dil),dil:b.dil});
+    }else{
+      const g=pickDown(lv.d);
+      sim.stay(hold,{k:'oc',g},sacB,g.id,false);
+      rows.push({k:'lvl',d:lv.d,dur:hold,rt:sim.rt,gas:gasName(g),gid:g.id});
+    }
+  }
+  const bottomEndRt=sim.rt, dBot=sim.d, snap=sim.clone();
+  let cur=ascOC?pickDown(dBot):null;
+  const botGas=cur;
+  if(ascOC&&cur){
+    const p=ppO2(E,cur,dBot);
+    if(p>L.ppo2Bottom+TOL) W.push({lvl:'warn',kind:'ppo2',t:gasName(cur)+' a '+dBot+' m: ppO₂ '+fmt(p,2)+', sopra il limite di '+fmt(L.ppo2Bottom,2)+'.'});
+    if(p<L.ppo2Min) W.push({lvl:'err',kind:'hypo',t:gasName(cur)+' a '+dBot+' m è ipossico: ppO₂ '+fmt(p,2)+'.'});
+  }
+  const gfLo=A.gfLo/100, gfHi=Math.max(A.gfLo,A.gfHi)/100, I=A.stopInt, LS=A.lastStop;
+  let sp=s.ccr.spHigh, first=null, dil=curDil;
+  const stops=[];
+  const breath=()=>ascOC?{k:'oc',g:cur}:{k:'ccr',sp,dil};
+  const sacA=ascOC?sacD:0;
+  const kfA=ascOC?((dm,b)=>b.g.id):null;
+  const label=()=>ascOC?gasName(cur):loopLabel(sp,dil);
+  const addStop=(d,dur,sw,ld,from)=>{
+    const useAt=Object.assign({},sim.use), pA=sim.pcts(d);
+    sim.stay(dur,breath(),sacA,ascOC?cur.id:null,true);
+    const last=stops[stops.length-1], gl=label(), pD=sim.pcts(d);
+    if(last&&Math.abs(last.d-d)<1e-6&&last.gas===gl){last.dur+=dur;last.rt=sim.rt;last.sw=last.sw||sw;last.pD=pD;if(ld){if(!last.leadStart) last.leadStart=ld;last.lead=ld;}}
+    else stops.push({k:'stop',d,dur,rt:sim.rt,gas:gl,sw,gid:ascOC?cur.id:null,useAt,lead:ld||null,leadStart:ld||null,from:from||null,toG:ascOC?cur:(sw?dil:null),pA,pD});
+  };
+  let bestAsc=d=>{
+    let best=null;
+    for(const g of ocGases){
+      const p=ppO2(E,g,d), lim=g.role==='deco'?L.ppo2Deco:L.ppo2Bottom;
+      const ok=(g.sw!=null&&g.sw!=='')?d<=Number(g.sw)+1e-6:p<=lim+TOL;
+      if(!ok||p<L.ppo2Min) continue;
+      if(!best||g.o2>best.o2||(g.o2===best.o2&&g.he<best.he)) best=g;
+    }
+    return best;
+  };
+  if(hydro){
+    bestAsc=d=>{
+      if(h2Of(cur)>0) return d<=H.dH2+1e-6?H.trans:null;
+      let best=null;
+      for(const g of H.gases){
+        if(h2Of(g)>0) continue;
+        const p=ppO2(E,g,d), lim=g.role==='deco'?L.ppo2Deco:L.ppo2Bottom;
+        if(p>lim+TOL||p<L.ppo2Min) continue;
+        if(!best||g.o2>best.o2) best=g;
+      }
+      return best;
+    };
+  }
+  const dilFor=d=>{
+    if(h2Of(s.ccr.dil)===0&&ppO2(E,s.ccr.dil,d)<=1.6+TOL) return s.ccr.dil;
+    const m=bestMix(E,s,d,1.1,21);return {o2:m.o2,he:m.he,h2:0,auto:true};
+  };
+  const ndl=sim.ceilD(gfHi)<=1e-4&&!(ascOC&&h2Of(cur)>0)&&!(!ascOC&&h2Of(dil)>0);
+  const nextOf=d=>{
+    const onGrid=Math.abs(d/I-Math.round(d/I))<1e-6;
+    let next=onGrid?Math.round(d/I)*I-I:Math.floor(d/I)*I;
+    if(next<LS-1e-6) next=d>LS+1e-6?LS:0;
+    return Math.max(0,next);
+  };
+  if(ndl){
+    sim.move(0,R.asc,()=>breath(),sacA,kfA,true);
+  }else{
+    let d=sim.d;
+    while(d>1e-6){
+      const next=nextOf(d);
+      if(!ascOC&&h2Of(dil)>0&&next<safeD(sp)-1e-6){
+        const prev=dil;dil=dilFor(d);
+        addStop(d,Math.max(A.switchTime,HC.wash),true,null,prev);
+        continue;
+      }
+      if(!ascOC&&dil!==s.ccr.dil&&next>0&&ppO2(E,dil,next)<L.ppo2Min-1e-9){
+        const prev=dil, nd=dilFor(d);
+        if(nd!==dil&&(nd.o2!==dil.o2||nd.he!==dil.he)){dil=nd;if(A.switchTime>0) addStop(d,A.switchTime,true,null,prev);continue;}
+      }
+      const gf=first===null?gfLo:gfHi+(gfLo-gfHi)*(next/first);
+      if(sim.ceilD(gf)<=next+1e-6){
+        const rate=first===null?R.asc:(next===0?R.surf:R.stops);
+        sim.move(next,rate,()=>breath(),sacA,kfA,true);
+        d=next;
+        if(d>0&&ascOC){
+          const g=bestAsc(d);
+          if(g&&(g.o2>cur.o2+1e-9||(hydro&&h2Of(cur)>0&&g===H.trans))){
+            const prev=cur;cur=g;
+            const dur=hydro&&h2Of(prev)>0?Math.max(A.switchTime,HC.wash):A.switchTime;
+            if(dur>0) addStop(d,dur,true,null,prev);
+            else stops.push({k:'stop',d,dur:0,rt:sim.rt,gas:label(),sw:true,gid:cur.id,useAt:Object.assign({},sim.use),from:prev,toG:cur});
+          }
+        }
+      }else{
+        if(first===null){first=d;if(!ascOC) sp=s.ccr.spDeco;}
+        addStop(d,1,false,sim.lead(gf,d));
+      }
+      if(sim.rt-bottomEndRt>3000){
+        return {error:'La decompressione supera le 50 ore: piano non calcolabile con questi parametri.'};
+      }
+    }
+  }
+  return {ok:true,rows:rows.concat(stops),levels:rows,stops,runtime:sim.rt,tts:sim.rt-bottomEndRt,
+    cns:sim.cns,otu:sim.otu,maxPpo2:sim.maxPpo2,prof:sim.prof,use:sim.use,useAsc:sim.useAsc,W,
+    dBot,bottomEndRt,first,ndl,ocGases,ascOC,botGas,E,maxD:Math.max(...levels.map(l=>l.d)),
+    bailout:!!opt.bailout,cont:!!(opt.dd||opt.dt),snap,levelsUsed:levels,hydro:H,botDil:curDil};
+}
+/* Follow a fixed schedule from the bottom snapshot of r and check every move against the model.
+   opt.extend: lengthen a stop until the next scheduled depth can be reached; opt.round: round durations up. */
+function runSchedule(s,r,sched,opt){
+  opt=opt||{};
+  const E=r.E, A=s.algo, R=s.rates, sim=r.snap.clone();
+  const gfLo=A.gfLo/100, gfHi=Math.max(A.gfLo,A.gfHi)/100, I=A.stopInt, LS=A.lastStop;
+  const decoStops=sched.filter(x=>!x.sw);
+  const anchor=Math.min(r.first||Infinity,decoStops.length?decoStops[0].d:Infinity);
+  const gfAt=d=>d>=anchor-1e-6?gfLo:gfHi+(gfLo-gfHi)*(d/anchor);
+  const byId=id=>r.ocGases.find(g=>g.id===id);
+  let cur=r.ascOC?r.botGas:null, sp=s.ccr.spHigh, started=false, dil=r.botDil||s.ccr.dil;
+  const brOf=()=>r.ascOC?{k:'oc',g:cur}:{k:'ccr',sp,dil};
+  const sac=r.ascOC?s.cons.sacDeco*(r.bailout?s.cons.stress:1):0;
+  const kf=r.ascOC?((dm,b)=>b.g.id):null;
+  const goOn=(sm,to,st)=>{
+    while(sm.d>to+1e-9){
+      const d=sm.d, onGrid=Math.abs(d/I-Math.round(d/I))<1e-6;
+      let nxt=onGrid?Math.round(d/I)*I-I:Math.floor(d/I)*I;
+      if(nxt<LS-1e-6) nxt=d>LS+1e-6?LS:0;
+      if(nxt<to) nxt=to;
+      if(sm.ceilD(gfAt(nxt))>nxt+1e-6) return false;
+      const rate=!st?R.asc:(nxt===0?R.surf:R.stops);
+      sm.move(nxt,rate,()=>brOf(),sac,kf,true);
+    }
+    return true;
+  };
+  const rnd=m=>m>=10?Math.ceil(m/5)*5:Math.ceil(m/2)*2;
+  const out=[];
+  for(let k=0;k<sched.length;k++){
+    const st=sched[k];
+    if(!goOn(sim,st.d,started)) return {ok:false,failAt:st.d};
+    if(!st.sw) started=true;
+    if(r.ascOC&&st.gid&&st.gid!==cur.id){const g=byId(st.gid);if(g) cur=g;}
+    if(!r.ascOC&&!st.sw) sp=s.ccr.spDeco;
+    if(!r.ascOC&&st.sw&&st.toG) dil=st.toG;
+    const useAt=Object.assign({},sim.use), pA=sim.pcts(st.d);
+    let dur=opt.round?rnd(st.dur):st.dur;
+    sim.stay(dur,brOf(),sac,r.ascOC?cur.id:null,true);
+    if(opt.extend||opt.round){
+      const nextT=k+1<sched.length?sched[k+1].d:0;
+      const can=e=>{const c=sim.clone();if(e>0) c.stay(e,brOf(),0,null,true);return goOn(c,nextT,started);};
+      let extra=0;
+      if(!can(0)){
+        let hi=1;while(!can(hi)&&hi<4096) hi*=2;
+        let lo=hi>1?hi>>1:0;
+        while(hi-lo>1){const m=(lo+hi)>>1;if(can(m)) hi=m;else lo=m;}
+        extra=hi;sim.stay(extra,brOf(),sac,r.ascOC?cur.id:null,true);
+      }
+      dur+=extra;
+      if(opt.round&&extra){const t=rnd(dur);sim.stay(t-dur,brOf(),sac,r.ascOC?cur.id:null,true);dur=t;}
+    }
+    out.push(Object.assign({},st,{dur,rt:sim.rt,useAt,pA,pD:sim.pcts(st.d)}));
+  }
+  if(!goOn(sim,0,started)) return {ok:false,failAt:0};
+  return Object.assign({},r,{stops:out,rows:r.levels.concat(out),runtime:sim.rt,tts:sim.rt-r.bottomEndRt,cns:sim.cns,otu:sim.otu,maxPpo2:sim.maxPpo2,prof:sim.prof,use:sim.use,useAsc:sim.useAsc,simplified:true,W:r.W});
+}
+const strip=x=>({d:x.d,dur:x.dur,gas:x.gas,sw:x.sw,gid:x.gid,from:x.from,toG:x.toG,lead:x.lead,leadStart:x.leadStart});
+function simplifyPlan(s,r,o){
+  o=o||{};
+  if(!r||!r.ok||r.ndl||!r.stops.length) return null;
+  let s2=s, base=r;
+  const I=o.int||s.algo.stopInt, LSo=o.last||s.algo.lastStop;
+  if(I!==s.algo.stopInt||LSo!==s.algo.lastStop){
+    s2=JSON.parse(JSON.stringify(s));
+    s2.algo.stopInt=I;s2.algo.lastStop=LSo;
+    base=plan(s2,{bailout:r.bailout});
+    if(!base.ok||base.ndl) return null;
+  }
+  let sched=base.stops.map(strip);
+  let cur=runSchedule(s2,base,sched,{extend:true});
+  if(!cur.ok) return null;
+  const target=Math.max(1,Math.ceil(sched.length*(1-(o.reduce||0)/100)));
+  let guard=0;
+  while(sched.length>target&&guard++<60){
+    let cand=[];
+    for(let i=0;i<sched.length-1;i++) if(!sched[i].sw) cand.push(i);
+    if(!cand.length) break;
+    if(cand.length>6) cand=cand.slice().sort((a,b)=>sched[a].dur-sched[b].dur).slice(0,cand.length>12?3:5);
+    let best=null;
+    for(const i of cand){
+      const t=sched.slice();t.splice(i,1);
+      const rr=runSchedule(s2,base,t,{extend:true});
+      if(rr.ok&&(!best||rr.runtime<best.runtime)) best=rr;
+    }
+    if(!best) break;
+    cur=best;sched=best.stops.map(strip);
+  }
+  if(o.round!==false){const rr=runSchedule(s2,base,sched,{round:true});if(rr.ok) cur=rr;}
+  cur.simpleInfo={int:I,last:LSo,from:r.stops.length,to:cur.stops.length};
+  return cur;
+}
+
+/* ===== SECOND ENGINE: written separately (Schreiner equation, its own tables) to cross-check the first ===== */
+const ZHL16C=[
+  [5.0,1.1696,0.5578,1.88,1.6189,0.4770],[8.0,1.0000,0.6514,3.02,1.3830,0.5747],
+  [12.5,0.8618,0.7222,4.72,1.1919,0.6527],[18.5,0.7562,0.7825,6.99,1.0458,0.7223],
+  [27.0,0.6200,0.8126,10.21,0.9220,0.7582],[38.3,0.5043,0.8434,14.48,0.8205,0.7957],
+  [54.3,0.4410,0.8693,20.53,0.7305,0.8279],[77.0,0.4000,0.8910,29.11,0.6502,0.8553],
+  [109.0,0.3750,0.9092,41.20,0.5950,0.8757],[146.0,0.3500,0.9222,55.19,0.5545,0.8903],
+  [187.0,0.3295,0.9319,70.69,0.5333,0.8997],[239.0,0.3065,0.9403,90.34,0.5189,0.9073],
+  [305.0,0.2835,0.9477,115.29,0.5181,0.9122],[390.0,0.2610,0.9544,147.42,0.5176,0.9171],
+  [498.0,0.2480,0.9602,188.24,0.5172,0.9217],[635.0,0.2327,0.9653,240.03,0.5119,0.9267]];
+function planB(s){
+  const surf=1.01325*Math.pow(1-2.25577e-5*(s.env.alt||0),5.25588);
+  const perM=s.env.water==='salt'?0.10101:0.0980665, WV=0.0627, lim=s.lim, slack=0.03;
+  const amb=d=>surf+Math.max(0,d)*perM;
+  const ccr=s.mode==='ccr';
+  let tis=ZHL16C.map(()=>[(surf-WV)*0.7902,0]);
+  let clock=0, here=0;
+  const schreiner=(p0,pa0,rate,dt,half)=>{const k=Math.LN2/half;return pa0+rate*(dt-1/k)-(pa0-p0-rate/k)*Math.exp(-k*dt);};
+  const inert=(d,b)=>{
+    const pa=amb(d)-WV;
+    if(!b.ccr) return [pa*(1-b.o2-b.he),pa*b.he];
+    let o=Math.min(b.sp,pa);if(o<b.o2*pa) o=b.o2*pa;
+    const rest=Math.max(0,pa-o), fn=1-b.o2-b.he, sum=fn+b.he;
+    return sum>0?[rest*fn/sum,rest*b.he/sum]:[0,0];
+  };
+  const travel=(to,dur,brAt)=>{
+    if(dur<=0){here=to;return;}
+    const n=Math.max(1,Math.ceil(Math.abs(to-here))), from=here;
+    for(let k=0;k<n;k++){
+      const a=from+(to-from)*k/n, b=from+(to-from)*(k+1)/n, dt=dur/n, br=brAt((a+b)/2);
+      const ia=inert(a,br), ib=inert(b,br);
+      tis=tis.map((c,i)=>[schreiner(c[0],ia[0],(ib[0]-ia[0])/dt,dt,ZHL16C[i][0]),schreiner(c[1],ia[1],(ib[1]-ia[1])/dt,dt,ZHL16C[i][3])]);
+    }
+    clock+=dur;here=to;
+  };
+  const tolerated=gf=>{let m=0;tis.forEach((c,i)=>{const z=ZHL16C[i],t=c[0]+c[1];if(t<=0) return;const a=(z[1]*c[0]+z[4]*c[1])/t,b=(z[2]*c[0]+z[5]*c[1])/t,v=(t-a*gf)/(gf/b+1-gf);if(v>m) m=v;});return m;};
+  const ceiling=gf=>(tolerated(gf)-surf)/perM;
+  const toB=g=>({o2:g.o2/100,he:g.he/100});
+  const down=s.gases.filter(g=>g.role!=='deco');
+  const downGas=d=>{let fondo=null,best=null;for(const g of down){const p=amb(d)*g.o2/100;if(p<lim.ppo2Min-1e-9||p>lim.ppo2Bottom+slack) continue;if(g.role==='fondo'&&!fondo) fondo=g;if(!best||g.o2>best.o2) best=g;}return fondo||best||down.find(g=>g.role==='fondo')||down[0];};
+  let high=false;
+  const loop=d=>{if(!high&&d>=s.ccr.spSwitch) high=true;return {ccr:true,sp:high?s.ccr.spHigh:s.ccr.spLow,o2:s.ccr.dil.o2/100,he:s.ccr.dil.he/100};};
+  for(const lv of s.levels){
+    const rate=lv.d>=here?s.rates.desc:s.rates.asc;
+    travel(lv.d,Math.abs(lv.d-here)/rate,ccr?loop:(d=>toB(downGas(d))));
+    const hold=Math.max(0,lv.t-clock);
+    if(ccr){high=true;travel(lv.d,0,loop);const b=loop(lv.d);const iv=inert(lv.d,b);tis=tis.map((c,i)=>[schreiner(c[0],iv[0],0,hold,ZHL16C[i][0]),schreiner(c[1],iv[1],0,hold,ZHL16C[i][3])]);clock+=hold;}
+    else{const b=toB(downGas(lv.d)), iv=inert(lv.d,b);tis=tis.map((c,i)=>[schreiner(c[0],iv[0],0,hold,ZHL16C[i][0]),schreiner(c[1],iv[1],0,hold,ZHL16C[i][3])]);clock+=hold;}
+  }
+  const leave=clock;
+  let gas=ccr?null:downGas(here), sp=s.ccr.spHigh;
+  const breath=()=>ccr?{ccr:true,sp,o2:s.ccr.dil.o2/100,he:s.ccr.dil.he/100}:toB(gas);
+  const wait=(min)=>{const b=breath(), iv=inert(here,b);tis=tis.map((c,i)=>[schreiner(c[0],iv[0],0,min,ZHL16C[i][0]),schreiner(c[1],iv[1],0,min,ZHL16C[i][3])]);clock+=min;};
+  const out=[];
+  const note=(d,min)=>{const l=out[out.length-1];if(l&&l.d===d) l.dur+=min;else out.push({d,dur:min});};
+  const lo=s.algo.gfLo/100, hi=Math.max(s.algo.gfLo,s.algo.gfHi)/100, step=s.algo.stopInt, last=s.algo.lastStop;
+  if(ceiling(hi)<=1e-4){travel(0,here/s.rates.asc,()=>breath());return {runtime:clock,tts:clock-leave,stops:out};}
+  let firstStop=null, guard=0;
+  while(here>1e-6&&guard++<100000){
+    const r=here/step, grid=Math.abs(r-Math.round(r))<1e-6;
+    let next=grid?(Math.round(r)-1)*step:Math.floor(r)*step;
+    if(next<last-1e-6) next=here>last+1e-6?last:0;
+    const gf=firstStop==null?lo:hi+(lo-hi)*next/firstStop;
+    if(ceiling(gf)<=next+1e-6){
+      const v=firstStop==null?s.rates.asc:(next===0?s.rates.surf:s.rates.stops);
+      travel(next,(here-next)/v,()=>breath());
+      if(here>0&&!ccr){
+        let best=null;
+        for(const g of s.gases){const p=amb(here)*g.o2/100, l=g.role==='deco'?lim.ppo2Deco:lim.ppo2Bottom;
+          const ok=(g.sw!=null&&g.sw!=='')?here<=Number(g.sw)+1e-6:p<=l+slack;
+          if(!ok||p<lim.ppo2Min) continue;
+          if(!best||g.o2>best.o2||(g.o2===best.o2&&g.he<best.he)) best=g;}
+        if(best&&best.o2>gas.o2+1e-9){gas=best;if(s.algo.switchTime>0){wait(s.algo.switchTime);note(here,s.algo.switchTime);}}
+      }
+    }else{
+      if(firstStop==null){firstStop=here;if(ccr) sp=s.ccr.spDeco;}
+      wait(1);note(here,1);
+    }
+    if(clock-leave>3000) return null;
+  }
+  return {runtime:clock,tts:clock-leave,stops:out};
+}
+function crossCheck(s,a){
+  if(!a||!a.ok) return null;
+  if(s.mode==='oc'&&s.gases.some(g=>h2Of(g)>0)) return {na:true,why:'idrogeno'};
+  if(s.mode==='ccr'&&s.levels.some(l=>l.dil)) return {na:true,why:'diluenti per settore'};
+  let b;try{b=planB(s);}catch(e){b=null;}
+  if(!b) return {ok:false,diff:Infinity};
+  const ma={}, mb={};
+  for(const x of a.stops) ma[x.d]=(ma[x.d]||0)+x.dur;
+  for(const x of b.stops) mb[x.d]=(mb[x.d]||0)+x.dur;
+  let maxStop=0;
+  for(const d of new Set(Object.keys(ma).concat(Object.keys(mb)))) maxStop=Math.max(maxStop,Math.abs((ma[d]||0)-(mb[d]||0)));
+  const diff=Math.abs(a.runtime-b.runtime);
+  return {ok:diff<=1.5&&maxStop<=1,diff,maxStop,b};
+}
+/* ===== ENGINE END ===== */
+/* ===== APP ===== */
+const $=(s,r=document)=>r.querySelector(s);
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const uid=()=>Math.random().toString(36).slice(2,9);
+const deep=o=>JSON.parse(JSON.stringify(o));
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmtL=n=>Math.round(n).toLocaleString('it-IT');
+const KEY='bathys.v1';
+
+const CYLS=[{id:'s80',name:'S80',vol:11.1,bar:207},{id:'s40',name:'S40',vol:5.7,bar:207},{id:'c12',name:'12 L',vol:12,bar:232},{id:'c15',name:'15 L',vol:15,bar:232},{id:'c3',name:'3 L',vol:3,bar:200},
+  {id:'d7',name:'D7 (7+7)',vol:14,bar:232},{id:'d10',name:'D10 (10+10)',vol:20,bar:232},{id:'d12',name:'D12 (12+12)',vol:24,bar:232},{id:'d15',name:'D15 (15+15)',vol:30,bar:232},{id:'d18',name:'D18 (18+18)',vol:36,bar:232},{id:'d20',name:'D20 (20+20)',vol:40,bar:232}];
+const G=(o2,he,role,cyl,n)=>({id:uid(),o2,he,role,sw:null,cyl,n});
+const PRESETS=[
+  {id:'p1',name:'Mare 30 m, aria',mode:'oc',levels:[{d:30,t:30}],gases:[G(21,0,'fondo','c15',1)],gf:[30,80]},
+  {id:'p2',name:'Nitrox 35 m',mode:'oc',levels:[{d:35,t:30}],gases:[G(28,0,'fondo','s80',2),G(50,0,'deco','s80',1)],gf:[30,80]},
+  {id:'p3',name:'Trimix 60 m',mode:'oc',levels:[{d:60,t:20}],gases:[G(18,45,'fondo','s80',2),G(50,0,'deco','s80',1),G(100,0,'deco','s80',1)],gf:[30,80]},
+  {id:'p4',name:'Trimix 90 m',mode:'oc',levels:[{d:90,t:20}],gases:[G(10,70,'fondo','s80',2),G(21,35,'viaggio','s80',1),G(50,0,'deco','s80',1),G(100,0,'deco','s80',1)],gf:[30,80]},
+  {id:'p5',name:'CCR 60 m',mode:'ccr',levels:[{d:60,t:40}],dil:{o2:18,he:45},bailout:[G(18,45,'fondo','s80',1),G(50,0,'deco','s80',1)],gf:[30,80]},
+  {id:'p6',name:'CCR 100 m',mode:'ccr',levels:[{d:100,t:30}],dil:{o2:10,he:70},bailout:[G(10,70,'fondo','s80',2),G(21,35,'viaggio','s80',1),G(50,0,'deco','s80',1)],gf:[30,80]}
+];
+function defaults(){
+  return {v:1,mode:'oc',levels:[{d:60,t:20}],act:0,presetName:'',
+    algo:{gfLo:30,gfHi:80,stopInt:3,lastStop:6,switchTime:1},
+    rates:{desc:20,asc:9,stops:6,surf:3},
+    lim:{ppo2Bottom:1.4,ppo2Deco:1.6,ppo2Min:0.16,endMax:30,o2Narc:true,densMax:5.2,icd:true},
+    gases:deep(PRESETS[2].gases),
+    ccr:{spLow:0.7,spHigh:1.3,spSwitch:20,spDeco:1.3,dil:{o2:18,he:45},o2Vol:3,o2Bar:200,dilVol:3,dilBar:200,metab:1.0,loop:6,dilExtra:50,bailout:deep(PRESETS[4].bailout)},
+    cons:{sacBottom:20,sacDeco:15,stress:2,problemMin:1,divers:2,reserve:'rock'},
+    cyls:deep(CYLS),cont:{list:[{dd:5,dt:5},{dd:3,dt:3},{dd:10,dt:5}],sel:0},
+    inv:{rtOn:false,rt:90,ttsOn:true,tts:60,cnsOn:true,cns:80,gasOn:true},pen:{on:false,rule:3,speed:10},view:'table',metroDir:'v',simple:false,simp:{int:3,last:6,reduce:0,round:true},hidden:[],h2exp:false,tutDone:false,
+    warn:{ppo2:true,hypo:true,end:true,dens:true,densAbs:6.2,cns:true,cnsWarn:80,cnsMax:100,otu:true,otuMax:300,deep:true,deepVal:150,reserve:true},
+    h2cfg:{o2max:4,step:2,wash:10,stages:3,cyl:'s80'},
+    env:{water:'salt',alt:0,theme:'mare',look:'dark'},
+    presets:deep(PRESETS),seenIntro:false};
+}
+function load(){
+  const d=defaults();
+  try{
+    const raw=localStorage.getItem(KEY)||localStorage.getItem('nadir.v1');
+    if(!raw) return d;
+    const s=JSON.parse(raw);
+    for(const k of Object.keys(d)){
+      if(s[k]===undefined) continue;
+      if(d[k]&&typeof d[k]==='object'&&!Array.isArray(d[k])) d[k]=Object.assign(d[k],s[k]);
+      else d[k]=s[k];
+    }
+    if(!Array.isArray(d.levels)||!d.levels.length) d.levels=[{d:60,t:20}];
+    if(typeof d.cont.dd==='number'){d.cont.list=[{dd:d.cont.dd,dt:d.cont.dt}];delete d.cont.dd;delete d.cont.dt;}
+    if(!Array.isArray(d.cont.list)||!d.cont.list.length) d.cont.list=[{dd:5,dt:5}];
+    if(d.simp.last==null) d.simp.last=d.algo.lastStop;
+    for(const c of CYLS) if(!d.cyls.some(x=>x.id===c.id)) d.cyls.push(deep(c));
+    d.act=clamp(d.act|0,0,d.levels.length-1);
+  }catch(e){}
+  return d;
+}
+let S=load(), saveT=null;
+function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}},250);}
+function getP(path){return path.split('.').reduce((o,k)=>o==null?o:o[k],S);}
+function setP(path,v){const ks=path.split('.');let o=S;for(let i=0;i<ks.length-1;i++)o=o[ks[i]];o[ks[ks.length-1]]=v;}
+function cylOf(id){return S.cyls.find(c=>c.id===id)||S.cyls[0];}
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),1800);}
+
+/* ---------- look & water ---------- */
+const WATER={
+  mare:{base:[22,88,126],k:[0.30,0.065,0.035]},
+  lago:{base:[30,92,84],k:[0.32,0.11,0.17]},
+  grotta:{base:[18,24,30],k:[0.02,0.02,0.02]}
+};
+const media=window.matchMedia?matchMedia('(prefers-color-scheme: dark)'):null;
+function isLight(){return S.env.look==='light'||(S.env.look==='auto'&&media&&!media.matches);}
+function applyLook(){
+  const root=document.documentElement;
+  if(S.env.look==='auto') root.removeAttribute('data-look'); else root.setAttribute('data-look',S.env.look);
+  $('#torch').style.opacity=S.env.theme==='grotta'&&S.env.look!=='night'?'1':'0';
+  setWater(currentDepth());
+}
+function currentDepth(){const l=S.levels[S.act]||S.levels[0];return l?l.d:0;}
+function setWater(depth){
+  const w=WATER[S.env.theme]||WATER.mare, c=[0,0,0];
+  for(let i=0;i<3;i++) c[i]=w.base[i]*Math.pow(Math.exp(-w.k[i]*depth),0.45);
+  let col;
+  if(S.env.look==='night'){col=[6,0,0];}
+  else if(isLight()){
+    const t=Math.min(1,depth/250), m=0.82-0.22*t;
+    col=c.map((v,i)=>Math.round(v+([226,236,240][i]-v)*m));
+  }else col=c.map(Math.round);
+  const W=$('#water');
+  W.style.setProperty('--water','rgb('+col.join(',')+')');
+  const light=Math.exp(-w.k[1]*depth);
+  W.style.setProperty('--rays',S.env.theme==='grotta'||S.env.look==='night'?0:(0.35*light).toFixed(3));
+  W.style.setProperty('--blob',S.env.look==='night'?'0':(isLight()?0.22:0.12+0.25*Math.pow(light,0.4)).toFixed(3));
+  W.style.setProperty('--motes',(isLight()||S.env.look==='night'||depth<120)?0:Math.min(1,(depth-120)/150).toFixed(2));
+  const meta=document.querySelector('meta[name=theme-color]');
+  if(meta) meta.setAttribute('content','rgb('+col.join(',')+')');
+}
+(function motes(){
+  const m=$('#motes');
+  for(let i=0;i<22;i++){
+    const d=document.createElement('i');d.className='mote';
+    d.style.left=Math.random()*100+'%';d.style.top=Math.random()*100+'%';
+    d.style.setProperty('--dur',(10+Math.random()*16)+'s');
+    d.style.setProperty('--dx',(Math.random()*60-30)+'px');d.style.setProperty('--dy',(-20-Math.random()*60)+'px');
+    d.style.animationDelay=(-Math.random()*20)+'s';
+    m.appendChild(d);
+  }
+})();
+document.addEventListener('pointermove',e=>{
+  if(S.env.theme!=='grotta') return;
+  const W=$('#water');W.style.setProperty('--tx',e.clientX+'px');W.style.setProperty('--ty',e.clientY+'px');
+},{passive:true});
+if(media&&media.addEventListener) media.addEventListener('change',()=>{if(S.env.look==='auto') applyLook();});
+
+/* ---------- wheel ---------- */
+const ITEM=48;
+class Wheel{
+  constructor(host,o){
+    this.o=o;this.pos=o.value;this.last=Math.round(o.value);
+    const el=document.createElement('div');el.className='wheel';el.tabIndex=0;
+    el.setAttribute('role','spinbutton');el.setAttribute('aria-label',o.label+'. Trascina per cambiare, invio per scrivere il valore');
+    host.appendChild(el);this.el=el;this.items=[];
+    for(let k=0;k<9;k++){const s=document.createElement('div');s.className='wi';el.appendChild(s);this.items.push(s);}
+    const u=document.createElement('span');u.className='wunit';u.textContent=o.unit;el.appendChild(u);
+    el.addEventListener('pointerdown',e=>{this.stop();try{el.setPointerCapture(e.pointerId);}catch(_){}this.drag={y:e.clientY,t:e.timeStamp,moved:0,v:0};});
+    el.addEventListener('pointermove',e=>{
+      const d=this.drag;if(!d) return;
+      const dy=e.clientY-d.y, dt=Math.max(1,e.timeStamp-d.t), vel=Math.abs(dy)/dt;
+      const acc=1+Math.min(14,Math.pow(vel/0.5,2.2));
+      const dv=-dy/ITEM*acc;
+      this.pos=clamp(this.pos+dv,this.o.min-0.45,this.o.max+0.45);
+      d.v=0.6*d.v+0.4*(dv/dt);d.moved+=Math.abs(dy);d.y=e.clientY;d.t=e.timeStamp;
+      this.render();
+    });
+    const up=()=>{const d=this.drag;this.drag=null;if(!d) return;if(d.moved<6){this.snap();this.o.onTap&&this.o.onTap();return;}this.fling(d.v);};
+    el.addEventListener('pointerup',up);
+    el.addEventListener('pointercancel',()=>{this.drag=null;this.snap();});
+    el.addEventListener('wheel',e=>{
+      e.preventDefault();this.stop();
+      const acc=1+Math.min(10,Math.abs(e.deltaY)/35);
+      this.pos=clamp(this.pos+Math.sign(e.deltaY)*0.35*acc,this.o.min,this.o.max);this.render();
+      clearTimeout(this.wt);this.wt=setTimeout(()=>this.snap(),140);
+    },{passive:false});
+    el.addEventListener('keydown',e=>{
+      const m={ArrowUp:1,ArrowDown:-1,PageUp:10,PageDown:-10};
+      if(m[e.key]){e.preventDefault();this.set(clamp(Math.round(this.pos)+m[e.key],this.o.min,this.o.max));}
+      else if(e.key==='Enter'||e.key===' '){e.preventDefault();this.o.onTap&&this.o.onTap();}
+    });
+    this.render();
+  }
+  stop(){cancelAnimationFrame(this.raf);this.raf=null;}
+  set(v){this.stop();this.pos=v;this.render();}
+  range(min,max){this.o.min=min;this.o.max=max;if(this.pos<min||this.pos>max){this.pos=clamp(Math.round(this.pos),min,max);}this.render();}
+  fling(v){
+    let lt=performance.now();
+    const step=now=>{
+      const dt=Math.min(40,now-lt);lt=now;
+      this.pos+=v*dt;v*=Math.pow(0.955,dt/16);
+      if(this.pos<this.o.min||this.pos>this.o.max){this.pos=clamp(this.pos,this.o.min,this.o.max);v=0;}
+      this.render();
+      if(Math.abs(v)<0.0012){this.snap();return;}
+      this.raf=requestAnimationFrame(step);
+    };
+    this.raf=requestAnimationFrame(step);
+  }
+  snap(){
+    this.stop();
+    const from=this.pos, to=clamp(Math.round(this.pos),this.o.min,this.o.max), t0=performance.now();
+    const step=now=>{const k=Math.min(1,(now-t0)/170), e=1-Math.pow(1-k,3);this.pos=from+(to-from)*e;this.render();if(k<1) this.raf=requestAnimationFrame(step);};
+    this.raf=requestAnimationFrame(step);
+  }
+  render(){
+    const base=Math.round(this.pos);
+    for(let k=-4;k<=4;k++){
+      const it=this.items[k+4], v=base+k, off=v-this.pos, a=Math.abs(off);
+      if(v<this.o.min||v>this.o.max||a>3.6){it.style.opacity='0';it.textContent='';continue;}
+      it.textContent=v;
+      it.style.transform='translateY('+(off*ITEM*0.92)+'px) rotateX('+(-off*21)+'deg) scale('+(1-a*0.09)+')';
+      it.style.opacity=String(Math.max(0,1-a*0.29));
+      it.classList.toggle('warn',!!(this.o.zone&&this.o.zone(v)));
+    }
+    const iv=clamp(base,this.o.min,this.o.max);
+    if(iv!==this.last){
+      if(navigator.vibrate&&this.drag!==undefined){
+        try{const z=this.o.zone;navigator.vibrate(z&&!!z(iv)!==!!z(this.last)?22:3);}catch(_){}
+      }
+      this.last=iv;this.o.onChange(iv);
+    }
+    this.el.setAttribute('aria-valuenow',iv);this.el.setAttribute('aria-valuemin',this.o.min);this.el.setAttribute('aria-valuemax',this.o.max);
+    this.el.setAttribute('aria-valuetext',iv+' '+this.o.unitLong);
+  }
+}
+
+/* ---------- breathing helpers ---------- */
+function E0(){return envOf(S);}
+function gasAtDepth(d){
+  const E=E0(), L=S.lim, set=S.gases.filter(g=>g.role!=='deco');
+  const ok=set.filter(g=>{const p=ppO2(E,g,d);return p>=L.ppo2Min&&p<=L.ppo2Bottom+TOL;});
+  return ok.find(g=>g.role==='fondo')||ok.sort((a,b)=>b.o2-a.o2)[0]||set.find(g=>g.role==='fondo')||set[0]||null;
+}
+function depthGas(){const lv=S.levels[S.act]||{};return S.mode==='ccr'?(lv.dil||S.ccr.dil):gasAtDepth(currentDepth());}
+function zoneDepth(v){
+  const lv=S.levels[S.act]||{};const g=S.mode==='ccr'?(lv.dil||S.ccr.dil):(S.gases.find(x=>x.role==='fondo')||S.gases[0]);
+  if(!g) return false;
+  const E=E0(), lim=S.mode==='ccr'?1.6:S.lim.ppo2Bottom, w=S.warn;
+  return (w.ppo2&&ppO2(E,g,v)>lim+TOL)||(w.end&&endOf(E,S,g,v)>S.lim.endMax)||(w.dens&&densOf(E,g,v)>S.lim.densMax);
+}
+
+/* ---------- home ---------- */
+let wD,wT;
+function lvl(){return S.levels[S.act];}
+function timeMin(i){return i>0?S.levels[i-1].t+1:1;}
+function initWheels(){
+  wD=new Wheel($('#wDepth'),{min:1,max:400,value:lvl().d,unit:'m',unitLong:'metri',label:'Profondità',zone:zoneDepth,
+    onChange:v=>{lvl().d=v;setWater(v);save();renderPills();scheduleLive();renderLevels();},
+    onTap:()=>openNumber({title:'Profondità',unit:'m',value:lvl().d,min:1,max:400,dec:0,th:'depth',onOk:v=>{lvl().d=v;wD.set(v);}})});
+  wT=new Wheel($('#wTime'),{min:timeMin(S.act),max:9999,value:lvl().t,unit:'min',unitLong:'minuti',label:'Minuto di stacco',
+    onChange:v=>{setLevelTime(S.act,v);save();scheduleLive();renderLevels();},
+    onTap:()=>openNumber({title:'Minuto di stacco',unit:'min',value:lvl().t,min:timeMin(S.act),max:9999,dec:0,th:'time',onOk:v=>{wT.set(v);setLevelTime(S.act,v);renderLevels();scheduleLive();}})});
+}
+function setLevelTime(i,v){
+  S.levels[i].t=v;
+  for(let j=i+1;j<S.levels.length;j++) if(S.levels[j].t<=S.levels[j-1].t) S.levels[j].t=S.levels[j-1].t+1;
+}
+function syncWheels(){wD.stop();wT.stop();wD.o.zone=zoneDepth;wD.o.min=1;wD.o.max=400;wD.pos=lvl().d;wD.last=lvl().d;wD.render();wT.o.min=timeMin(S.act);wT.o.max=9999;wT.pos=lvl().t;wT.last=lvl().t;wT.render();}
+function renderLevels(){
+  const box=$('#levels');let h='';
+  S.levels.forEach((l,i)=>{
+    h+='<button type="button" class="lchip glass" data-i="'+i+'" aria-pressed="'+(i===S.act)+'" aria-label="Settore '+(i+1)+': '+l.d+' metri fino al minuto '+l.t+(i===S.act?'. Tocca per modificarlo':'')+'"><span class="serif">'+l.d+'</span>m fino al '+l.t+'′'+(S.mode==='ccr'&&l.dil?'<span class="dl">'+esc(gasName(l.dil))+'</span>':'')+(i===S.act?'<span class="ed" aria-hidden="true">✎</span>':'')+'</button>';
+  });
+  h+='<button type="button" class="lchip glass ghost" id="addLvl">+ Settore</button>';
+  if(S.levels.length>1) h+='<button type="button" class="lchip glass ghost" id="delLvl">Elimina settore '+(S.act+1)+'</button>';
+  box.innerHTML=h;
+  box.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(i===S.act){openSettings('lvl|'+i);return;}S.act=i;save();syncWheels();renderLevels();renderPills();setWater(currentDepth());});
+  const lp=$('#lvlProf');lp.innerHTML=lvlProfileHTML();attachLong(lp);fitHome();
+  $('#addLvl').onclick=()=>{const last=S.levels[S.levels.length-1];S.levels.push({d:Math.max(3,last.d-10),t:last.t+10});S.act=S.levels.length-1;save();syncWheels();renderAllHome();};
+  const del=$('#delLvl');if(del) del.onclick=()=>{S.levels.splice(S.act,1);S.act=Math.max(0,S.act-1);for(let i=1;i<S.levels.length;i++) if(S.levels[i].t<=S.levels[i-1].t) S.levels[i].t=S.levels[i-1].t+1;save();syncWheels();renderAllHome();};
+}
+function renderPills(){
+  const E=E0(), d=currentDepth(), g=depthGas(), L=S.lim, w=S.warn, hid=S.hidden||[];let h='', nh=0;
+  const pill=(key,cls,th,txt)=>{if(hid.includes(key)){nh++;return;}h+='<button type="button" class="pill'+cls+'" data-pk="'+key+'" data-th="'+th+'" aria-label="'+esc(txt)+'. Tocca per nascondere">'+txt+'</button>';};
+  if(g){
+    const p=ppO2(E,g,d), en=endOf(E,S,g,d), de=densOf(E,g,d), pl=S.mode==='ccr'?1.6:L.ppo2Bottom;
+    pill('ppo2',(w.ppo2&&p>pl+TOL?' warn':'')+(w.hypo&&p<L.ppo2Min&&S.mode!=='ccr'?' err':''),'ppo2Bottom',(S.mode==='ccr'?'ppO₂ flush ':'ppO₂ ')+fmt(p,2));
+    pill('end',w.end&&en>L.endMax?' warn':'','endMax','END '+Math.round(en)+' m');
+    pill('dens',w.dens?(de>w.densAbs?' err':de>L.densMax?' warn':''):'','densMax',fmt(de,1)+' g/L');
+  }
+  if(w.deep&&d>w.deepVal) pill('deep',' warn','model','Oltre '+w.deepVal+' m: fuori validazione');
+  const set=S.mode==='oc'?effGases(S):S.levels.map(l=>l.dil).filter(Boolean);
+  if(set.some(x=>(x.h2||0)>0&&x.o2>S.h2cfg.o2max)) h+='<span class="pill err" data-th="h2">Idrogeno con più del '+S.h2cfg.o2max+'% di O₂: esplosivo</span>';
+  else if(set.some(x=>(x.h2||0)>0)) h+='<span class="pill warn" data-th="h2">Idrogeno: modalità sperimentale</span>';
+  if(nh) h+='<button type="button" class="pill ghost" id="showPills">Mostra '+nh+(nh===1?' valore':' valori')+'</button>';
+  const box=$('#pills');box.innerHTML=h;
+  box.querySelectorAll('[data-pk]').forEach(b=>b.addEventListener('click',()=>{if(b._long) return;S.hidden=(S.hidden||[]).concat(b.dataset.pk);save();renderPills();}));
+  const sp=$('#showPills');if(sp) sp.onclick=()=>{S.hidden=[];save();renderPills();};
+  attachLong(box);
+  renderDsSum();
+}
+function gasList(arr){return arr.length?arr.map(gasName).join(', '):'nessuno';}
+function renderHomeList(){
+  let h='';
+  if(S.mode==='oc'){
+    h+=row('Gas',isHydroOC(S)?gasName(S.gases.find(g=>g.role==='fondo'))+' + '+(effGases(S).length-1)+' stage automatiche':gasList(S.gases),'gases','gases');
+  }else{
+    h+=row('Setpoint',fmt(S.ccr.spLow,1)+' → '+fmt(S.ccr.spHigh,1)+', deco '+fmt(S.ccr.spDeco,1),'ccr','spHigh');
+    h+=row('Diluente',gasName(S.ccr.dil),'ccr','dil');
+    h+=row('Bailout',S.ccr.bailout.length?gasList(S.ccr.bailout):'gas disponibili','bailout','bailout');
+  }
+  h+=row('Conservativismo','GF '+S.algo.gfLo+'/'+S.algo.gfHi,'algo','gfLo');
+  h+=row('Tempo massimo','trova il limite','inv','inv');
+  const box=$('#homeList');box.innerHTML=h;
+  box.querySelectorAll('[data-to]').forEach(b=>b.onclick=()=>{if(b._long) return;openSettings(b.dataset.to);});
+  attachLong(box);
+  function row(l,v,to,th){return '<button type="button" class="row" data-to="'+to+'" data-th="'+th+'"><span class="l">'+l+'</span><span class="v">'+esc(v)+' ›</span></button>';}
+}
+function renderMode(){document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===S.mode)));renderDsSum();}
+function renderDsSum(){
+  const el=$('#dsSum');if(!el) return;
+  let gas;
+  if(S.mode==='ccr') gas='CCR, '+gasName(S.ccr.dil);
+  else if(isHydroOC(S)) gas=gasName(S.gases.find(g=>g.role==='fondo'))+' + stage';
+  else{const f=S.gases.find(g=>g.role==='fondo')||S.gases[0], n=S.gases.length-1;gas=(f?gasName(f):'nessun gas')+(n>0?' +'+n:'');}
+  const pw=$('#pills')&&$('#pills').querySelector('.pill.warn,.pill.err');
+  el.innerHTML=(pw?'<i class="wdot" aria-label="Ci sono valori fuori limite"></i>':'')+esc(gas+', GF '+S.algo.gfLo+'/'+S.algo.gfHi);
+  const ml=$('#modeLine');
+  if(ml){
+    const lv=S.levels[S.act]||{};
+    let g;
+    if(S.mode==='ccr') g='diluente '+gasName(lv.dil||S.ccr.dil);
+    else{const f=S.gases.find(x=>x.role==='fondo')||S.gases[0];g=f?gasName(f):'nessun gas';}
+    ml.innerHTML='<i class="gdot" aria-hidden="true"></i><b>'+(S.mode==='ccr'?'CCR':'Circuito aperto')+'</b><span>'+esc(g)+'</span>';
+  }
+}
+function renderAllHome(){
+  $('#presetBtn').textContent='Piani preimpostati ›';
+  renderMode();renderLevels();renderPills();renderHomeList();scheduleLive();fitHome();
+}
+/* keep the home on one screen: shrink the wheel panel when the content would not fit */
+let fitT=null;
+function fitHome(){
+  clearTimeout(fitT);
+  fitT=setTimeout(()=>{
+    const home=$('#home');if(!home||document.body.classList.contains('plan')) return;
+    const root=document.documentElement;
+    let wh=214;root.style.setProperty('--wh',wh+'px');
+    let guard=0;
+    while(home.scrollHeight>home.clientHeight+1&&wh>112&&guard++<20){wh-=8;root.style.setProperty('--wh',wh+'px');}
+    if(wD) wD.render();if(wT) wT.render();
+  },40);
+}
+window.addEventListener('resize',fitHome);
+let liveT=null;
+function scheduleLive(){clearTimeout(liveT);liveT=setTimeout(live,140);}
+function live(){
+  const el=$('#live');
+  let r;try{r=plan(S);}catch(e){r={error:'Errore di calcolo.'};}
+  const box=$('#homeWarns');
+  if(r.error){el.innerHTML='<span>'+esc(r.error)+'</span>';box.hidden=true;return;}
+  const list=filtW(r.W).concat(checks(r)).filter(w=>w.lvl!=='info'), nW=list.length;
+  el.innerHTML='<span>Emersione al minuto</span><span class="serif">'+Math.ceil(r.runtime)+'′</span>'+(nW?'<button type="button" class="wbtn" id="liveWarn" aria-expanded="'+!!S.homeWarnOpen+'" aria-controls="homeWarns">'+nW+(nW===1?' avviso':' avvisi')+' <span aria-hidden="true">'+(S.homeWarnOpen?'▴':'▾')+'</span></button>':'');
+  box.innerHTML=nW?warnsHTML(list):'';
+  box.hidden=!(nW&&S.homeWarnOpen);
+  fitHome();
+  attachLong(box);
+  const b=$('#liveWarn');if(b) b.onclick=()=>{S.homeWarnOpen=!S.homeWarnOpen;save();live();};
+}
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{S.mode=b.dataset.mode;save();renderMode();renderHomeList();renderPills();wD.o.zone=zoneDepth;wD.render();scheduleLive();});
+(function(){const ds=$('#diveSet');ds.open=!!S.homeSetOpen;ds.addEventListener('toggle',()=>{S.homeSetOpen=ds.open;save();});
+  const ml=$('#modeLine');let lt=null,long=false;
+  ml.addEventListener('pointerdown',()=>{long=false;lt=setTimeout(()=>{long=true;S.mode=S.mode==='ccr'?'oc':'ccr';save();if(navigator.vibrate)try{navigator.vibrate(15);}catch(_){}renderMode();renderHomeList();renderPills();wD.o.zone=zoneDepth;wD.render();scheduleLive();toast(S.mode==='ccr'?'Passato a CCR':'Passato a circuito aperto');},550);});
+  const cl=()=>{clearTimeout(lt);lt=null;};
+  ml.addEventListener('pointerup',cl);ml.addEventListener('pointercancel',cl);ml.addEventListener('pointerleave',cl);
+  ml.addEventListener('contextmenu',e=>e.preventDefault());
+  ml.onclick=()=>{if(long){long=false;return;}ds.open=true;S.homeSetOpen=true;save();fitHome();setTimeout(()=>{try{ds.scrollIntoView({block:'nearest',behavior:'smooth'});}catch(e){}},30);};
+  ds.addEventListener('toggle',()=>fitHome());})();
+$('#btnSettings').onclick=()=>openSettings('root');
+$('#presetBtn').onclick=()=>openSettings('presets');
+(function grab(){
+  const g=$('#grab');let y0=null,moved=false;
+  g.addEventListener('pointerdown',e=>{y0=e.clientY;moved=false;});
+  g.addEventListener('pointermove',e=>{if(y0!=null&&y0-e.clientY>30&&!moved){moved=true;openSettings('root');}});
+  g.addEventListener('pointerup',()=>{y0=null;});
+  g.addEventListener('click',()=>{if(!moved) openSettings('root');});
+})();
+
+/* ---------- checks ---------- */
+function checks(r){
+  const E=E0(), L=S.lim, w=S.warn, out=[], maxD=Math.max(...S.levels.map(l=>l.d)), H2M=S.h2cfg.o2max;
+  if(w.deep&&maxD>w.deepVal) out.push({lvl:'warn',t:'Oltre '+w.deepVal+' m Bühlmann lavora fuori dai dati su cui è stato costruito: il piano è un’estrapolazione.',th:'model'});
+  const ocSet=S.mode==='oc'?effGases(S):(r&&r.bailout?bailoutGases(S):null);
+  if(ocSet){
+    for(const g of ocSet){
+      if((g.h2||0)>0&&g.o2>H2M) out.unshift({lvl:'err',t:'PERICOLO DI MORTE: '+gasName(g)+' contiene idrogeno con '+g.o2+'% di ossigeno. Sopra il '+H2M+'% la miscela è infiammabile ed esplosiva.',th:'h2'});
+      if(g.role==='deco'){
+        if(w.ppo2&&g.sw!=null&&g.sw!==''){const p=ppO2(E,g,Number(g.sw));if(p>L.ppo2Deco+TOL) out.push({lvl:'warn',t:gasName(g)+': cambio a '+g.sw+' m con ppO₂ '+fmt(p,2)+'.',th:'sw'});}
+        continue;
+      }
+      const deepest=g.role==='fondo'?maxD:Math.min(maxD,modOf(E,g,L.ppo2Bottom));
+      const en=endOf(E,S,g,deepest), de=densOf(E,g,deepest);
+      if(w.end&&en>L.endMax+0.5) out.push({lvl:'warn',t:gasName(g)+' a '+Math.round(deepest)+' m: END '+Math.round(en)+' m, oltre '+L.endMax+' m.',th:'endMax'});
+      if(w.dens){
+        if(de>w.densAbs) out.push({lvl:'err',t:gasName(g)+' a '+Math.round(deepest)+' m: densità '+fmt(de,1)+' g/L, oltre il massimo di '+fmt(w.densAbs,1)+'.',th:'densMax'});
+        else if(de>L.densMax) out.push({lvl:'warn',t:gasName(g)+' a '+Math.round(deepest)+' m: densità '+fmt(de,1)+' g/L, oltre '+fmt(L.densMax,1)+'.',th:'densMax'});
+      }
+    }
+    if(ocSet.some(g=>(g.h2||0)>0)) out.unshift({lvl:'err',t:'Modalità sperimentale idrogeno: nessun modello di decompressione è validato per l’idrogeno. Questo piano è un’estrapolazione da studio, non da usare in acqua.',th:'h2'});
+    if(S.mode==='oc'&&w.hypo&&!ocSet.some(g=>g.role!=='deco'&&ppO2(E,g,0)>=L.ppo2Min)) out.push({lvl:'err',t:'Nessun gas respirabile in superficie: aggiungi un gas da viaggio'+(isHydroOC(S)?' o una stage in più':'')+'.',th:'ppo2Min'});
+  }
+  if(S.mode==='ccr'){
+    const used=[];
+    S.levels.forEach(l=>{const g=l.dil||S.ccr.dil;used.push([g,l.d]);});
+    const seen=new Set();
+    for(const [g,d] of used){
+      const k=g.o2+'/'+g.he+'/'+(g.h2||0)+'@'+d;if(seen.has(k)) continue;seen.add(k);
+      const p=ppO2(E,g,d), de=densOf(E,g,d), en=endOf(E,S,g,d);
+      if(w.ppo2&&p>1.6) out.push({lvl:'warn',t:'Diluente '+gasName(g)+' a '+d+' m: ppO₂ di flush '+fmt(p,2)+', sopra 1,6.',th:'dil'});
+      if(w.end&&en>L.endMax+0.5) out.push({lvl:'warn',t:'Diluente '+gasName(g)+' a '+d+' m: END '+Math.round(en)+' m.',th:'endMax'});
+      if(w.dens&&de>L.densMax) out.push({lvl:de>w.densAbs?'err':'warn',t:'Diluente '+gasName(g)+' a '+d+' m: densità '+fmt(de,1)+' g/L.',th:'densMax'});
+    }
+    if(S.levels.some(l=>l.dil&&(l.dil.h2||0)>0)) out.unshift({lvl:'err',t:'Modalità sperimentale idrogeno nel diluente: nessun modello è validato. In risalita il diluente cambia prima che il loop superi il '+H2M+'% di ossigeno.',th:'h2'});
+  }
+  if(S.lim.icd&&r&&r.ok){
+    for(const x of r.stops){
+      if(!x.sw||!x.from||!x.toG) continue;
+      const nA=1-(x.from.o2+x.from.he+(x.from.h2||0))/100, nB=1-(x.toG.o2+x.toG.he+(x.toG.h2||0))/100, dN=nB-nA, dH=(x.from.he+(x.from.h2||0)-x.toG.he-(x.toG.h2||0))/100;
+      if(dH>0&&dN>dH/5+1e-9) out.push({lvl:'warn',t:'Cambio a '+fmt(x.d,0)+' m da '+gasName(x.from)+' a '+gasName(x.toG)+': l’azoto sale di '+Math.round(dN*100)+' punti mentre il gas leggero scende di '+Math.round(dH*100)+'. Supera la regola dei quinti (controdiffusione isobarica).',th:'icd'});
+    }
+  }
+  if(r&&r.ok){
+    if(w.cns){
+      if(r.cns>w.cnsMax) out.push({lvl:'err',t:'CNS '+Math.round(r.cns)+'%: oltre il '+w.cnsMax+'%.',th:'cns'});
+      else if(r.cns>w.cnsWarn) out.push({lvl:'warn',t:'CNS '+Math.round(r.cns)+'%: oltre l’avviso del '+w.cnsWarn+'%.',th:'cns'});
+    }
+    if(w.otu&&r.otu>w.otuMax) out.push({lvl:'warn',t:'OTU '+Math.round(r.otu)+': oltre '+w.otuMax+'.',th:'otu'});
+  }
+  return out;
+}
+
+/* ---------- multilevel profile on the home ---------- */
+function lvlProfileHTML(){
+  if(S.levels.length<2) return '';
+  const R=S.rates, pts=[[0,0]], segs=[];
+  let t=0,d=0,bad=[];
+  S.levels.forEach((l,i)=>{
+    const rate=l.d>=d?R.desc:R.asc;t+=Math.abs(l.d-d)/rate;pts.push([t,l.d]);
+    if(t>l.t+1e-6) bad.push(i);
+    const t0=t;t=Math.max(t,l.t);pts.push([t,l.d]);segs.push([t0,t,l.d,i]);d=l.d;
+  });
+  const tEnd=t+d/R.asc, maxD=Math.max(...S.levels.map(l=>l.d));
+  const W=340,H=96,px=8,top=10,bot=22, X=v=>px+(W-2*px)*v/Math.max(1,tEnd), Y=v=>top+(H-top-bot)*v/Math.max(1,maxD);
+  let g='<polyline points="'+pts.map(p=>X(p[0]).toFixed(1)+','+Y(p[1]).toFixed(1)).join(' ')+'" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>';
+  g+='<line x1="'+X(t)+'" y1="'+Y(d)+'" x2="'+X(tEnd)+'" y2="'+Y(0)+'" stroke="var(--ink2)" stroke-width="1.5" stroke-dasharray="4 4"/>';
+  for(const [a,b,dd,i] of segs){
+    const act=i===S.act, err=bad.includes(i);
+    g+='<line x1="'+X(a)+'" y1="'+Y(dd)+'" x2="'+X(b)+'" y2="'+Y(dd)+'" stroke="'+(err?'var(--err)':act?'var(--warn)':'var(--ink)')+'" stroke-width="'+(act?5:3)+'" stroke-linecap="round"/>';
+    g+='<text x="'+X(b)+'" y="'+(H-6)+'" text-anchor="middle" font-size="10" fill="'+(act?'var(--warn)':'var(--ink2)')+'">'+S.levels[i].t+'′</text>';
+    g+='<text x="'+((X(a)+X(b))/2)+'" y="'+(Y(dd)-6)+'" text-anchor="middle" font-size="10" fill="var(--ink2)">'+dd+' m</text>';
+  }
+  return '<div class="card glass lprof" data-th="time"><svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Profilo dei settori: profondità e minuti di stacco">'+g+'</svg>'+(bad.length?'<p class="lpw">Il settore '+(bad[0]+1)+' arriva dopo il suo minuto di stacco.</p>':'')+'</div>';
+}
+
+/* ---------- tutorial and guides ---------- */
+const TOURS={
+  home:[
+
+    ['#home .wheels','Trascina le rotelline: più veloce scorri, più salta. Tocca il numero per scriverlo a mano.'],
+    ['#levels','I settori. “+ Settore” aggiunge un livello; tocca di nuovo il settore attivo per modificarlo.'],
+    ['#lvlProf','Con più settori vedi il profilo dei minuti di stacco, per un controllo a colpo d’occhio.'],
+    ['#diveSet','Impostazioni immersione: tocca per aprire modalità OC o CCR, valori alla profondità, gas, conservativismo, tempo massimo e piani preimpostati. Un punto ambra segnala valori fuori limite.'],
+    ['#live','Il minuto di emersione, aggiornato mentre giri le rotelline. Tocca gli avvisi per vederli.'],
+    ['#btnCalc','Fai scorrere il cerchio verso destra per calcolare il piano completo. Sopra vedi già il minuto di emersione.'],
+    ['#btnSettings','Tutte le impostazioni. Ci arrivi anche scorrendo in su dal fondo.'],
+    ['#btnInfo','Su ogni schermata questo tasto apre il tutorial o la guida.']],
+  piano:[
+    ['.ctrls','Completo o semplificato, tabella o metro.'],
+    ['.simp','Nel piano semplice scegli intervallo, ultima sosta e quante soste togliere.'],
+    ['.big','Minuto di emersione e tempo di risalita.'],
+    ['.pills','CNS, OTU, ppO₂ massima, prima sosta e verifica con il secondo motore.'],
+    ['.warns','Gli avvisi: si configurano in Impostazioni → Avvisi.'],
+    ['.chart','Il profilo: i punti ambra sono i cambi gas.'],
+    ['.tbl','Le soste. Tocca una sosta per il dettaglio tissutale.'],
+    ['.metro','La mappa metro: ogni linea è uno scenario, compresi quelli in cui perdi un gas.'],
+    ['#btnShare','Crea l’immagine del piano da mandare su WhatsApp.']],
+  gas:[
+    ['.gasc','Ogni bombola: nel cerchio i bar a fine immersione, in ambra la riserva.'],
+    ['[data-th=trim]','Quanto sarai più leggero respirando il gas.'],
+    ['[data-th=pen]','Il punto di inversione in grotta o relitto, se l’hai attivato.']],
+  bail:[
+    ['.wline.info','Il bailout parte dalla fine dell’ultimo settore con il SAC sotto stress.'],
+    ['.chart','Il profilo del bailout in circuito aperto.'],
+    ['.gasc','Il gas di bailout che ti serve.']],
+  cont:[
+    ['.ctab','Ogni riga è uno scenario: tocca per vederne il piano qui sotto.'],
+    ['.big','Il piano dello scenario selezionato.']],
+  settings:[
+    ['#setBody .grp','Le sezioni. Tieni premuto una voce per leggere cosa fa.'],
+    ['#setDone','Fine chiude il pannello; puoi anche trascinarlo giù.']]
+};
+const GUIDES={
+  home:['Schermata principale','Imposta profondità e minuto di stacco con le rotelline: trascinando piano cambi di un’unità, veloce salti di molte. Tocca il numero per scriverlo.','Ogni settore è un livello dell’immersione: il minuto di stacco è il minuto totale in cui lasci quella quota, discesa compresa. Tocca di nuovo un settore per modificarlo; in CCR puoi dargli un diluente diverso.','Modalità, gas, conservativismo, valori alla profondità e piani preimpostati sono in “Impostazioni immersione”: tocca per aprirle. In basso vedi già il minuto di emersione e il numero di avvisi, che si espandono con un tocco; lo slide apre il piano completo.'],
+  piano:['Piano','In alto emersione e risalita, poi CNS, OTU e la verifica con il secondo motore di calcolo.','Il piano semplice riduce le soste: scegli l’intervallo, l’ultima sosta e quante soste togliere; ogni versione è ricalcolata e verificata.','Nella vista metro ogni colonna è uno scenario: la A con tutti i gas, le altre se perdi uno o più gas, con il punto in cui il percorso si separa. Tocca una sosta per il dettaglio tissutale.'],
+  gas:['Gas','Per ogni bombola vedi i litri usati, quelli disponibili e i bar a fine immersione. In ambra la riserva: gas minimo o terzi, secondo le impostazioni.','Assetto: quanti chili di gas respiri durante l’immersione.','Penetrazione: si attiva nelle impostazioni e calcola minuto di inversione e metri di sagola.'],
+  bail:['Bailout','Simula l’abbandono del rebreather alla fine dell’ultimo settore, in circuito aperto e con il SAC moltiplicato per il fattore stress. Se non hai impostato miscele di bailout, usa diluente e gas disponibili.'],
+  cont:['Contingenza','La tabella confronta il piano con ogni scenario di contingenza: più (o meno) profondità e tempo su ogni settore. Tocca una riga per il piano completo. Gli scenari si aggiungono in Impostazioni → Contingenza.'],
+  settings:['Impostazioni','Tutto è modificabile: algoritmo, velocità, gas, limiti, avvisi, CCR, consumi, bombole, contingenza, ambiente. Tieni premuto qualsiasi voce per l’approfondimento teorico.']
+};
+let TOUR=null;
+function tourKeyHere(){
+  if(setOpen) return 'settings';
+  if($('#plan').classList.contains('open')) return (PLAN&&PLAN.pageKeys&&PLAN.pageKeys[curPageIndex()])||'piano';
+  return 'home';
+}
+function tourRoot(key){
+  if(key==='settings') return $('#settings');
+  if(key==='home') return document;
+  return $('#pager .pg[data-pi="'+curPageIndex()+'"]')||document;
+}
+function startTour(key){
+  const root=tourRoot(key);
+  const steps=(TOURS[key]||[]).map(([sel,t])=>({el:(sel.startsWith('#')?document:root).querySelector(sel),t})).filter(s=>s.el&&s.el.getClientRects().length);
+  if(!steps.length){toast('Niente da mostrare qui');return;}
+  TOUR={steps,i:0};
+  $('#coach').hidden=false;
+  showStep();
+}
+function showStep(){
+  const st=TOUR.steps[TOUR.i], r=st.el.getBoundingClientRect();
+  if(r.top<60||r.bottom>window.innerHeight-200){try{st.el.scrollIntoView({block:'center',behavior:'auto'});}catch(e){}}
+  requestAnimationFrame(placeStep);
+}
+function placeStep(){
+  if(!TOUR) return;
+  const st=TOUR.steps[TOUR.i], r=st.el.getBoundingClientRect(), pad=6, sp=$('#spot'), tip=$('#ctip');
+  sp.style.transform='translate('+(r.left-pad)+'px,'+(r.top-pad)+'px)';sp.style.width=(r.width+pad*2)+'px';sp.style.height=(r.height+pad*2)+'px';
+  $('#ctxt').textContent=st.t;
+  $('#cnum').textContent=(TOUR.i+1)+' di '+TOUR.steps.length;
+  $('#cprev').disabled=TOUR.i===0;
+  $('#cnext').textContent=TOUR.i===TOUR.steps.length-1?'Fine':'Avanti';
+  const vh=window.innerHeight, below=r.bottom+14, th=tip.offsetHeight||140;
+  tip.style.top='0px';tip.style.transform='translateY('+(below+th<vh-10?below:Math.max(10,r.top-th-14))+'px)';
+  $('#cnext').focus();
+}
+function endTour(){TOUR=null;$('#coach').hidden=true;}
+function openHelp(){
+  const key=tourKeyHere(), gd=GUIDES[key]||GUIDES.home;
+  openMini('<h2 class="serif">'+esc(gd[0])+'</h2><p class="hint">Come vuoi conoscere questa schermata?</p><div class="btns"><button class="sec" type="button" id="hGuide">Guida scritta</button><button class="cta" type="button" id="hTour">Tutorial guidato</button></div>');
+  $('#hTour').onclick=()=>{closeMini();setTimeout(()=>startTour(key),320);};
+  $('#hGuide').onclick=()=>{openMini('<h2 class="serif">'+esc(gd[0])+'</h2><div class="theory sbody" style="max-height:58vh;padding:0">'+gd.slice(1).map(p=>'<p>'+esc(p)+'</p>').join('')+'</div><div class="btns" style="grid-template-columns:1fr"><button class="cta" type="button" id="gOk">Chiudi</button></div>');$('#gOk').onclick=closeMini;};
+}
+function openWelcome(){
+  openMini('<h2 class="serif">Benvenuto in Bathys</h2><div class="theory"><p>Un pianificatore di decompressione da usare a terra: non è un computer subacqueo e non segue la tua immersione reale.</p><p>Tieni premuta qualsiasi voce per l’approfondimento teorico. Il tasto i apre tutorial e guide in ogni schermata.</p></div><div class="btns"><button class="sec" type="button" id="wLater">Più tardi</button><button class="cta" type="button" id="wTour">Fai il tour</button></div>');
+  const done=()=>{S.seenIntro=true;S.tutDone=true;save();};
+  $('#wLater').onclick=()=>{done();closeMini();};
+  $('#wTour').onclick=()=>{done();closeMini();setTimeout(()=>startTour('home'),320);};
+}
+
+/* ---------- gas reports ---------- */
+function gasReport(r){
+  const C=S.cons, items=[];
+  for(const g of r.ocGases){
+    const used=r.use[g.id]||0;
+    if(g.virtual){items.push({name:gasName(g)+' (diluente)',used,cap:0,virtual:true});continue;}
+    const cyl=cylOf(g.cyl), n=Math.max(1,g.n||1), cap=cyl.vol*cyl.bar*n;
+    let reserve=0, rnote='';
+    if(C.reserve==='thirds'){reserve=cap/3;rnote='riserva di un terzo';}
+    else if(C.reserve==='rock'&&!r.bailout&&r.botGas&&g.id===r.botGas.id){
+      reserve=(C.problemMin*r.E.P(r.dBot)*C.sacBottom+(r.useAsc[g.id]||0))*C.stress*C.divers;rnote='gas minimo';
+    }
+    const endBar=(cap-used)/(cyl.vol*n);
+    items.push({name:gasName(g),cylLabel:n+' × '+cyl.name,used,cap,reserve,rnote,endBar,
+      lvl:used>cap?'err':(used+reserve>cap?'warn':'ok')});
+  }
+  return items;
+}
+function ring(used,res,label){
+  const C=251.3, fu=clamp(used,0,1), fr=clamp(res,0,1-fu);
+  return '<svg width="92" height="92" viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="40" fill="none" stroke="var(--line)" stroke-width="10"/>'+
+    (fr>0?'<circle cx="48" cy="48" r="40" fill="none" stroke="var(--warn)" stroke-width="10" stroke-dasharray="'+(fr*C)+' '+C+'" stroke-dashoffset="'+(-fu*C)+'" transform="rotate(-90 48 48)"/>':'')+
+    '<circle cx="48" cy="48" r="40" fill="none" stroke="var(--ink)" stroke-width="10" stroke-linecap="round" stroke-dasharray="'+Math.max(0.01,fu*C)+' '+C+'" transform="rotate(-90 48 48)"/>'+
+    '<text x="48" y="56" text-anchor="middle" font-family="Instrument Serif, Georgia, serif" font-size="26" fill="var(--ink)">'+label+'</text></svg>';
+}
+function gasCards(r){
+  if(!r||r.error) return '';
+  let h='';
+  for(const it of gasReport(r)){
+    if(it.virtual){
+      h+='<div class="card glass gasc">'+ring(0,0,'–')+'<div><div class="t">'+esc(it.name)+'</div><div class="d">'+fmtL(it.used)+' L dal bombolino del diluente</div></div></div>';
+      continue;
+    }
+    if(it.used<0.5){h+='<div class="card glass gasc">'+ring(0,0,'–')+'<div><div class="t">'+esc(it.name)+'</div><div class="d">'+it.cylLabel+', non usato in questo piano</div></div></div>';continue;}
+    const lab=it.endBar<0?'0':String(Math.round(it.endBar));
+    h+='<div class="card glass gasc">'+ring(it.used/it.cap,it.reserve/it.cap,lab)+'<div><div class="t">'+esc(it.name)+'</div>'+
+      '<div class="d">'+it.cylLabel+': '+fmtL(it.used)+' L su '+fmtL(it.cap)+', '+Math.max(0,Math.round(it.endBar))+' bar a fine</div>'+
+      (it.reserve?'<div class="d">'+(it.rnote==='gas minimo'?'Gas minimo ':'Riserva ')+fmtL(it.reserve)+' L</div>':'')+
+      (it.lvl==='err'?'<div class="e">Non basta: mancano '+fmtL(it.used-it.cap)+' L</div>':it.lvl==='warn'&&S.warn.reserve?'<div class="w">Sotto la riserva di '+fmtL(it.used+it.reserve-it.cap)+' L</div>':'')+
+      '</div></div>';
+  }
+  return h;
+}
+function ccrCards(r){
+  const c=S.ccr, E=r.E;
+  const o2used=c.metab*r.runtime, o2cap=c.o2Vol*c.o2Bar;
+  const dilUsed=c.loop*(E.P(r.maxD)-E.ps)+c.dilExtra, dilCap=c.dilVol*c.dilBar;
+  const card=(name,vol,used,cap)=>{const end=(cap-used)/vol;return '<div class="card glass gasc">'+ring(used/cap,0,String(Math.max(0,Math.round(end))))+'<div><div class="t">'+name+'</div><div class="d">'+fmt(vol,1)+' L: '+fmtL(used)+' L su '+fmtL(cap)+', '+Math.max(0,Math.round(end))+' bar a fine</div>'+(used>cap?'<div class="e">Non basta</div>':'')+'</div></div>';};
+  return card('Ossigeno',c.o2Vol,o2used,o2cap)+card('Diluente '+gasName(c.dil),c.dilVol,dilUsed,dilCap)+
+    '<p class="foot">Ossigeno: consumo metabolico per il runtime. Diluente: riempimento del loop in discesa più la quota extra.</p>';
+}
+
+/* ---------- plan page ---------- */
+function chart(r){
+  const W=340,H=150,px=12,py=12;
+  const T=Math.max(1,r.runtime), D=Math.max(...r.prof.map(p=>p[1]),1);
+  const X=t=>px+(W-2*px)*t/T, Y=d=>py+(H-2*py-8)*d/D;
+  const pts=r.prof.map(p=>X(p[0]).toFixed(1)+','+Y(p[1]).toFixed(1)).join(' ');
+  let marks='';
+  for(const s of r.stops) if(s.sw){const t=s.rt-s.dur;marks+='<circle cx="'+X(t).toFixed(1)+'" cy="'+Y(s.d).toFixed(1)+'" r="4.5" fill="var(--warn)"/>';}
+  return '<div class="card glass chart"><svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Profilo: '+Math.round(D)+' metri, emersione al minuto '+Math.ceil(T)+'">'+
+    '<line x1="'+px+'" y1="'+py+'" x2="'+(W-px)+'" y2="'+py+'" stroke="var(--line)"/>'+
+    '<polyline points="'+pts+'" fill="none" stroke="var(--line)" stroke-width="9" stroke-linejoin="round"/>'+
+    '<polyline points="'+pts+'" fill="none" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round"/>'+marks+
+    '<text x="'+(px+4)+'" y="'+(H-6)+'" font-size="11" fill="var(--ink2)" font-family="Geist, system-ui">'+Math.round(D)+' m</text>'+
+    '<text x="'+(W-px)+'" y="'+(H-6)+'" text-anchor="end" font-size="11" fill="var(--ink2)" font-family="Geist, system-ui">'+Math.ceil(T)+' min</text></svg></div>';
+}
+function warnsHTML(list){
+  if(!list.length) return '';
+  return '<div class="warns">'+list.map(w=>'<div class="wline '+(w.lvl==='err'?'err':w.lvl==='info'?'info':'')+'" data-th="'+(w.th||'')+'"><b>'+(w.lvl==='err'?'✕':'!')+'</b><span>'+esc(w.t)+'</span></div>').join('')+'</div>';
+}
+let REG=[];
+function reg(r){REG.push(r);return REG.length-1;}
+function filtW(W){const w=S.warn;return (W||[]).filter(x=>!(x.kind==='ppo2'&&!w.ppo2)&&!(x.kind==='hypo'&&!w.hypo));}
+function dualPill(c){
+  if(!c) return '';
+  if(c.na) return '<span class="pill" data-th="dual">Verifica non disponibile con '+esc(c.why||'questa configurazione')+'</span>';
+  return c.ok?'<span class="pill ok" data-th="dual">Verificato</span>':'<span class="pill err" data-th="dual">Verifica: scarto di '+(isFinite(c.diff)?fmt(c.diff,1)+' min':'calcolo fallito')+'</span>';
+}
+function resultHTML(r,note,extra){
+  extra=extra||{};
+  if(!r||r.error) return '<div class="empty">'+esc(r?r.error:'')+'</div>';
+  const ri=reg(r);
+  const warns=filtW(r.W).concat(checks(r));
+  let h='<div class="big"><div><span class="lab">Emersione</span><span class="serif num">'+Math.ceil(r.runtime)+'′</span></div><div class="r"><span class="lab">Risalita</span><span class="serif num it">'+Math.ceil(r.tts)+'′</span></div></div>';
+  h+='<div class="pills"><span class="pill" data-th="cns">CNS '+Math.round(r.cns)+'%</span><span class="pill" data-th="otu">OTU '+Math.round(r.otu)+'</span><span class="pill" data-th="ppo2Bottom">ppO₂ max '+fmt(r.maxPpo2,2)+'</span><span class="pill" data-th="gfLo">'+(r.ndl?'Senza decompressione':'Prima sosta '+r.first+' m')+'</span>'+(extra.dual?dualPill(extra.dual):'')+'</div>';
+  if(extra.pre) h+=extra.pre;
+  if(note) h+='<div class="wline info"><b>i</b><span>'+esc(note)+'</span></div>';
+  h+=warnsHTML(warns);
+  h+=chart(r);
+  if(S.view==='metro'){const nodes=scenarioTree(r,extra.fork,!!extra.fork&&!r.simplified);h+=(METRO_H&&S.metroDir==='h')?metroMapH(nodes,ri):metroMap(nodes,ri);}
+  else{
+    h+='<div class="card glass"><table class="tbl"><thead><tr><th>Profondità</th><th>Durata</th><th>Runtime</th><th>Gas</th></tr></thead><tbody>';
+    for(const x of r.levels) h+='<tr class="lvl'+(x.k==='wash'?' sw':'')+'"><td>'+fmt(x.d,0)+' m</td><td>'+Math.round(x.dur)+'′</td><td>'+Math.ceil(x.rt-1e-6)+'′</td><td>'+esc(x.k==='wash'?'Lavaggio, '+x.gas:x.gas)+'</td></tr>';
+    r.stops.forEach((x,i)=>{h+='<tr class="tap'+(x.sw?' sw':'')+'" data-ri="'+ri+'" data-si="'+i+'" tabindex="0" aria-label="Sosta a '+fmt(x.d,0)+' metri: tocca per il dettaglio tissutale"><td>'+fmt(x.d,0)+' m</td><td>'+Math.round(x.dur)+'′</td><td>'+Math.ceil(x.rt-1e-6)+'′</td><td>'+esc(x.gas)+'</td></tr>';});
+    h+='<tr><td>0 m</td><td></td><td>'+Math.ceil(r.runtime)+'′</td><td></td></tr></tbody></table></div>';
+  }
+  if(r.stops.length) h+='<p class="foot">Tocca una sosta per vedere il dettaglio tissutale.</p>';
+  return h;
+}
+
+/* ---------- metro map: every gas-loss scenario as its own line ---------- */
+let COLS={},COLN=0;
+function colOf(name){if(!(name in COLS)) COLS[name]='var(--g'+((COLN++%6)+1)+')';return COLS[name];}
+function legendHTML(){return '<div class="legend">'+Object.keys(COLS).map(k=>'<span><i style="background:'+COLS[k]+'"></i>'+esc(k)+'</span>').join('')+'</div>';}
+const VAR={};
+function contSel(){const l=S.cont.list;return l[Math.min(S.cont.sel||0,l.length-1)]||{dd:5,dt:5};}
+function variant(kind,excl){
+  const key=kind+'|'+excl.slice().sort().join(',');
+  if(VAR[key]) return VAR[key];
+  const T=deep(S);let r;
+  if(kind==='bail'){
+    if(T.ccr.bailout.length) T.ccr.bailout=T.ccr.bailout.filter(g=>!excl.includes(g.id));
+    else T.gases=T.gases.filter(g=>!excl.includes(g.id));
+    r=plan(T,{bailout:true});
+  }else{
+    T.gases=T.gases.filter(g=>!excl.includes(g.id));
+    r=kind==='cont'?plan(T,{dd:contSel().dd,dt:contSel().dt}):plan(T);
+  }
+  VAR[key]=r;return r;
+}
+function gasById(id){return S.gases.concat(S.ccr.bailout).find(g=>g.id===id);}
+function scenarioTree(root,kind,allow){
+  const nodes=[{r:root,excl:[],forkD:null,parent:-1,forkSi:null}];
+  if(!allow) return nodes;
+  const visit=ni=>{
+    const n=nodes[ni];
+    n.r.stops.forEach((x,si)=>{
+      if(nodes.length>=8) return;
+      const g=x.toG;
+      if(!x.sw||!g||!g.id||g.virtual||g.auto||(g.h2||0)>0) return;
+      if(n.forkD!=null&&x.d>=n.forkD-1e-6) return;
+      if(n.excl.includes(g.id)) return;
+      const excl=n.excl.concat(g.id), b=variant(kind,excl);
+      if(!b||!b.ok) return;
+      nodes.push({r:b,excl,forkD:x.d,parent:ni,forkSi:si});
+      visit(nodes.length-1);
+    });
+  };
+  visit(0);
+  return nodes;
+}
+/* horizontal metro: kept for future use, switched off */
+const METRO_H=false;
+function gasSeq(nd){
+  const r=nd.r, seq=[r.levels[r.levels.length-1].gas];
+  for(const st of r.stops) if(st.gas!==seq[seq.length-1]) seq.push(st.gas);
+  return seq;
+}
+function metroMapH(nodes,rootRi){
+  const n=nodes.length, k=v=>Math.round(v*100)/100;
+  const set=new Set();
+  nodes.forEach(nd=>nd.r.stops.forEach(x=>{if(nd.forkD==null||x.d<=nd.forkD+1e-6) set.add(k(x.d));}));
+  const depths=[...set].sort((a,b)=>b-a);
+  const root=nodes[0].r, lastLv=root.levels[root.levels.length-1];
+  const CW=46, left=14, top=22, RH=64, X={};
+  let x=left+CW*0.5;const xBot=x;x+=CW;
+  for(const d of depths){X[d]=x;x+=CW;}
+  const xSurf=x, W=Math.max(340,xSurf+CW*0.9), H=top+RH*n+6;
+  const Y=c=>top+RH*c+RH*0.6;
+  let grid='', lines='', dots='';
+  grid+='<text x="'+xBot+'" y="13" text-anchor="middle" font-size="10.5" fill="var(--ink2)">'+fmt(lastLv.d,0)+' m</text>';
+  for(const d of depths) grid+='<line x1="'+X[d]+'" x2="'+X[d]+'" y1="'+(top-2)+'" y2="'+(H-4)+'" stroke="var(--line)"/><text x="'+X[d]+'" y="13" text-anchor="middle" font-size="10.5" fill="var(--ink2)">'+fmt(d,0)+'</text>';
+  grid+='<text x="'+xSurf+'" y="13" text-anchor="middle" font-size="10.5" fill="var(--ink2)">0 m</text>';
+  const ris=nodes.map((nd,i)=>i===0&&rootRi!=null?rootRi:reg(nd.r));
+  nodes.forEach((nd,c)=>{
+    const r=nd.r, y=Y(c), pts=[];
+    const seq=gasSeq(nd).map(shortGas).join(' → '), d=Math.ceil(r.runtime)-Math.ceil(root.runtime);
+    const lx=nd.parent<0?left:X[k(nd.forkD)]-CW*0.3;
+    grid+='<text x="'+lx+'" y="'+(y-20)+'" font-size="11.5" font-weight="600" fill="var(--ink)">'+esc(seq)+'<tspan font-weight="400" fill="var(--ink2)">  '+Math.ceil(r.runtime)+'′'+(d>0?' +'+d+'′':'')+'</tspan></text>';
+    if(nd.parent<0) pts.push({x:xBot,y,gas:lastLv.gas,rt:lastLv.rt,bottom:true});
+    else{
+      const pn=nodes[nd.parent], prevGas=nd.forkSi>0?pn.r.stops[nd.forkSi-1].gas:pn.r.levels[pn.r.levels.length-1].gas;
+      pts.push({x:X[k(nd.forkD)],y:Y(nd.parent),gas:prevGas,fork:true});
+    }
+    r.stops.forEach((st,si)=>{if(nd.forkD!=null&&st.d>nd.forkD+1e-6) return;pts.push({x:X[k(st.d)],y,gas:st.gas,si,sw:st.sw,rt:st.rt});});
+    pts.push({x:xSurf,y,surf:true,rt:r.runtime,gas:null});
+    for(let i=0;i<pts.length-1;i++){
+      const a=pts[i], b=pts[i+1], col=colOf(a.gas||b.gas), dash=nd.parent>=0&&i===0?' stroke-dasharray="7 5"':'';
+      if(a.x===b.x||a.y===b.y) lines+='<line x1="'+a.x+'" y1="'+a.y+'" x2="'+b.x+'" y2="'+b.y+'" stroke="'+col+'" stroke-width="5" stroke-linecap="round"'+dash+'/>';
+      else lines+='<path d="M'+a.x+','+a.y+' C'+(a.x+(b.x-a.x)*0.55)+','+a.y+' '+(a.x+(b.x-a.x)*0.45)+','+b.y+' '+b.x+','+b.y+'" fill="none" stroke="'+col+'" stroke-width="5" stroke-linecap="round"'+dash+'/>';
+    }
+    for(const p of pts){
+      if(p.fork) continue;
+      const col=colOf(p.gas||(pts[pts.length-2]&&pts[pts.length-2].gas)||lastLv.gas);
+      let g;
+      if(p.surf) g='<circle cx="'+p.x+'" cy="'+p.y+'" r="6.5" fill="var(--ink)"/>';
+      else if(p.bottom) g='<circle cx="'+p.x+'" cy="'+p.y+'" r="6" fill="'+col+'"/>';
+      else if(p.sw) g='<circle cx="'+p.x+'" cy="'+p.y+'" r="8.5" fill="var(--base)" stroke="'+col+'" stroke-width="3"/><circle cx="'+p.x+'" cy="'+p.y+'" r="3.5" fill="'+col+'"/>';
+      else g='<circle cx="'+p.x+'" cy="'+p.y+'" r="5.5" fill="var(--base)" stroke="'+col+'" stroke-width="3"/>';
+      const tx='<text x="'+p.x+'" y="'+(p.y+21)+'" text-anchor="middle" font-size="'+(p.surf?12:10.5)+'" font-weight="'+(p.surf?700:400)+'" fill="var(--ink)">'+Math.ceil((p.rt||0)-1e-6)+'′</text>';
+      if(p.si!=null) dots+='<g class="mst" data-ri="'+ris[c]+'" data-si="'+p.si+'" tabindex="0" role="button" aria-label="'+esc(seq)+': sosta a '+fmt(r.stops[p.si].d,0)+' metri"><circle cx="'+p.x+'" cy="'+p.y+'" r="15" fill="transparent"/>'+g+tx+'</g>';
+      else dots+=g+tx;
+    }
+  });
+  return '<div class="card glass metro"><div class="mscroll"><svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" role="img" aria-label="Mappa orizzontale delle soste con '+n+(n===1?' scenario':' scenari')+'">'+grid+lines+dots+'</svg></div>'+(W>360?'<p class="foot" style="margin:6px 0 0">Scorri di lato per vedere tutte le soste.</p>':'')+legendHTML()+'</div>';
+}
+function metroMap(nodes,rootRi){
+  const n=nodes.length, W=340, AX=40, colW=(W-AX-4)/n, rowH=n>4?30:34, top=n>1?24:12;
+  const k=v=>Math.round(v*100)/100;
+  const set=new Set();
+  nodes.forEach(nd=>nd.r.stops.forEach(x=>{if(nd.forkD==null||x.d<=nd.forkD+1e-6) set.add(k(x.d));}));
+  const depths=[...set].sort((a,b)=>b-a), Y={};
+  const root=nodes[0].r, lastLv=root.levels[root.levels.length-1];
+  let y=top+rowH*0.5;const yBot=y;y+=rowH;
+  for(const d of depths){Y[d]=y;y+=rowH;}
+  const ySurf=y, H=ySurf+rowH*0.6;
+  const X=c=>AX+colW*(c+0.5), fs=n>5?9:10.5, showDur=n<=2;
+  let lines='', dots='', labels='';
+  labels+='<text x="2" y="'+(yBot+4)+'" font-size="10.5" fill="var(--ink2)">'+fmt(lastLv.d,0)+' m</text>';
+  for(const d of depths) labels+='<line x1="'+AX+'" x2="'+(W-2)+'" y1="'+Y[d]+'" y2="'+Y[d]+'" stroke="var(--line)"/><text x="2" y="'+(Y[d]+4)+'" font-size="10.5" fill="var(--ink2)">'+fmt(d,0)+' m</text>';
+  labels+='<text x="2" y="'+(ySurf+4)+'" font-size="10.5" fill="var(--ink2)">0 m</text>';
+  const L=['A','B','C','D','E','F','G','H'];
+  const ris=nodes.map((nd,i)=>i===0&&rootRi!=null?rootRi:reg(nd.r));
+  nodes.forEach((nd,c)=>{
+    const r=nd.r, x=X(c), pts=[];
+    if(n>1) labels+='<text x="'+x+'" y="12" text-anchor="middle" font-size="11" font-weight="600" fill="var(--ink)">'+L[c]+'</text>';
+    if(nd.parent<0) pts.push({x,y:yBot,gas:lastLv.gas,rt:lastLv.rt,bottom:true});
+    else{
+      const pn=nodes[nd.parent], prevGas=nd.forkSi>0?pn.r.stops[nd.forkSi-1].gas:pn.r.levels[pn.r.levels.length-1].gas;
+      pts.push({x:X(nd.parent),y:Y[k(nd.forkD)],gas:prevGas,fork:true});
+    }
+    r.stops.forEach((st,si)=>{if(nd.forkD!=null&&st.d>nd.forkD+1e-6) return;pts.push({x,y:Y[k(st.d)],gas:st.gas,si,sw:st.sw,rt:st.rt,dur:st.dur});});
+    pts.push({x,y:ySurf,surf:true,rt:r.runtime,gas:null});
+    for(let i=0;i<pts.length-1;i++){
+      const a=pts[i], b=pts[i+1], col=colOf(a.gas||b.gas);
+      const dash=nd.parent>=0&&i===0?' stroke-dasharray="7 5"':'';
+      if(a.x===b.x||a.y===b.y) lines+='<line x1="'+a.x+'" y1="'+a.y+'" x2="'+b.x+'" y2="'+b.y+'" stroke="'+col+'" stroke-width="5" stroke-linecap="round"'+dash+'/>';
+      else{const my=a.y+(b.y-a.y)*0.55;lines+='<path d="M'+a.x+','+a.y+' C'+a.x+','+my+' '+b.x+','+(a.y+(b.y-a.y)*0.45)+' '+b.x+','+b.y+'" fill="none" stroke="'+col+'" stroke-width="5" stroke-linecap="round"'+dash+'/>';}
+    }
+    for(const p of pts){
+      if(p.fork) continue;
+      const col=colOf(p.gas||(pts[pts.length-2]&&pts[pts.length-2].gas)||lastLv.gas);
+      let g='';
+      if(p.surf) g='<circle cx="'+p.x+'" cy="'+p.y+'" r="6.5" fill="var(--ink)"/>';
+      else if(p.bottom) g='<circle cx="'+p.x+'" cy="'+p.y+'" r="6" fill="'+col+'"/>';
+      else if(p.sw) g='<circle cx="'+p.x+'" cy="'+p.y+'" r="8.5" fill="var(--base)" stroke="'+col+'" stroke-width="3"/><circle cx="'+p.x+'" cy="'+p.y+'" r="3.5" fill="'+col+'"/>';
+      else g='<circle cx="'+p.x+'" cy="'+p.y+'" r="5.5" fill="var(--base)" stroke="'+col+'" stroke-width="3"/>';
+      const lab=Math.ceil((p.rt||0)-1e-6)+'′'+(showDur&&p.dur!=null?'  ('+Math.round(p.dur)+'′)':'');
+      const tx='<text x="'+(p.x+10)+'" y="'+(p.y+4)+'" font-size="'+(p.surf?fs+2:fs)+'" font-weight="'+(p.surf?700:400)+'" fill="var(--ink)" stroke="var(--base)" stroke-width="3" paint-order="stroke">'+lab+'</text>';
+      if(p.si!=null) dots+='<g class="mst" data-ri="'+ris[c]+'" data-si="'+p.si+'" tabindex="0" role="button" aria-label="'+L[c]+': sosta a '+fmt(r.stops[p.si].d,0)+' metri"><circle cx="'+p.x+'" cy="'+p.y+'" r="14" fill="transparent"/>'+g+tx+'</g>';
+      else dots+=g+tx;
+    }
+  });
+  let h='<div class="card glass metro"><svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Mappa delle soste'+(n>1?' con '+n+' scenari':'')+'">'+labels+lines+dots+'</svg>';
+  if(n>1){
+    h+='<div class="scen">'+nodes.map((nd,c)=>{
+      const lost=nd.excl.map(id=>{const g=gasById(id);return g?gasName(g):'?';});
+      const d=Math.ceil(nd.r.runtime)-Math.ceil(root.runtime);
+      return '<div class="sc"><b>'+L[c]+'</b><span>'+(lost.length?'Senza '+esc(lost.join(' e ')):'Tutti i gas')+(nd.forkD!=null?', bivio a '+fmt(nd.forkD,0)+' m':'')+'</span><em>'+Math.ceil(nd.r.runtime)+'′'+(d>0?' +'+d+'′':'')+'</em></div>';
+    }).join('')+'</div>';
+  }
+  return h+legendHTML()+'</div>';
+}
+
+/* trim (gas weight) */
+function dens20(g){const fo=g.o2/100,fh=g.he/100,fx=((g&&g.h2)||0)/100,fn=Math.max(0,1-fo-fh-fx);return fo*1.331+fh*0.166+fx*0.0838+fn*1.165;}
+function trimHTML(r){
+  if(!r||!r.ok) return '';
+  const last=r.stops.length?r.stops[r.stops.length-1]:null;
+  let start=0,used=0,usedLast=0;
+  if(r.ascOC){
+    for(const g of r.ocGases){
+      if(g.virtual) continue;
+      const c=cylOf(g.cyl), n=Math.max(1,g.n||1), de=dens20(g)/1000;
+      start+=c.vol*c.bar*n*de;used+=(r.use[g.id]||0)*de;
+      usedLast+=((last&&last.useAt&&last.useAt[g.id])||(last?0:(r.use[g.id]||0)))*de;
+    }
+  }else{
+    const c=S.ccr, dO=dens20({o2:100,he:0})/1000, dD=dens20(c.dil)/1000;
+    const dil=c.loop*(r.E.P(r.maxD)-r.E.ps)+c.dilExtra, tLast=last?last.rt-last.dur:r.runtime;
+    start=c.o2Vol*c.o2Bar*dO+c.dilVol*c.dilBar*dD;used=c.metab*r.runtime*dO+dil*dD;usedLast=c.metab*tLast*dO+dil*dD;
+  }
+  return '<div class="card glass" data-th="trim"><div class="gasc" style="align-items:flex-start"><div><div class="t">Assetto</div>'+
+    '<div class="d">Gas a bordo in partenza: '+fmt(start,1)+' kg</div>'+
+    (last?'<div class="d">All’arrivo all’ultima sosta, a '+fmt(last.d,0)+' m: <b>'+fmt(usedLast,1)+' kg più leggero</b></div>':'')+
+    '<div class="d">In superficie: <b>'+fmt(used,1)+' kg più leggero</b></div>'+
+    '<div class="d" style="margin-top:6px">Conta solo il peso del gas respirato. Per la zavorra esatta somma la spinta delle bombole vuote.</div></div></div></div>';
+}
+function penHTML(r){
+  if(!S.pen.on||!r||!r.ok) return '';
+  const k=Number(S.pen.rule)||3, D=r.maxD, P=r.E.P(D), C=S.cons;
+  let name,cap,t,basis;
+  if(S.mode==='oc'){
+    const g=r.botGas;if(!g) return '';
+    const c=cylOf(g.cyl), n=Math.max(1,g.n||1);cap=c.vol*c.bar*n;name=gasName(g)+', '+n+' × '+c.name;
+    t=(cap/k)/(C.sacBottom*P);basis='Usi 1/'+k+' del gas per entrare, al SAC di fondo.';
+  }else{
+    const bg=bailoutGases(S).find(g=>g.role==='fondo')||bailoutGases(S)[0];
+    if(!bg) return '';
+    if(bg.virtual){cap=S.ccr.dilVol*S.ccr.dilBar;name=gasName(bg)+', bombolino del diluente';}
+    else{const c=cylOf(bg.cyl), n=Math.max(1,bg.n||1);cap=c.vol*c.bar*n;name=gasName(bg)+', '+n+' × '+c.name;}
+    t=(cap*(1-1/k))/(C.sacBottom*C.stress*P);basis='Il bailout deve bastare per uscire da solo sotto stress (SAC × '+fmt(C.stress,1)+'), tenendo 1/'+k+' di riserva.';
+  }
+  const dist=t*S.pen.speed, lv=r.levels[r.levels.length-1], over=S.mode==='oc'&&lv&&lv.dur>2*t;
+  return '<div class="card glass" data-th="pen"><div class="t" style="font-size:17px;font-weight:600">Penetrazione a '+fmt(D,0)+' m</div>'+
+    '<div class="big" style="margin:6px 0"><div><span class="lab">Gira entro</span><span class="serif num" style="font-size:52px">'+Math.floor(t)+'′</span></div><div class="r"><span class="lab">Sagola</span><span class="serif num it" style="font-size:52px">'+fmtL(Math.floor(dist/10)*10)+' m</span></div></div>'+
+    '<div class="d" style="font-size:14px;color:var(--ink2)">'+esc(name)+'. '+esc(basis)+' Velocità '+S.pen.speed+' m/min.</div>'+
+    (over?'<div class="w" style="font-size:13px;color:var(--warn);margin-top:6px">Il tempo sul fondo supera andata e ritorno con questa regola.</div>':'')+'</div>';
+}
+function hydroHTML(r){
+  if(!r||!r.ok||!r.hydro) return '';
+  const H=r.hydro, E=r.E, L=S.lim;
+  const rows=H.gases.filter(g=>g!==H.bot).map(g=>{
+    const from=g.trans?H.dH2:Math.round(modOf(E,g,g.role==='deco'?L.ppo2Deco:L.ppo2Bottom));
+    return '<div class="d">'+esc(gasName(g))+': '+(g.trans?'cambio a '+H.dH2+' m con '+S.h2cfg.wash+'′ di lavaggio':(g.role==='deco'?'deco':'viaggio')+', da '+from+' m')+'</div>';
+  }).join('');
+  return '<div class="card glass" data-th="h2chain"><div class="t" style="font-size:17px;font-weight:600">Stage calcolate per l’idrogeno</div>'+rows+'<div class="d" style="margin-top:6px">In discesa passi sull’idrogeno solo dopo il lavaggio a '+H.dH2+' m con '+esc(gasName(H.trans))+'.</div></div>';
+}
+
+/* ---------- plan pages ---------- */
+let PLAN=null;
+function simpleKey(){const p=S.simp;return p.int+'|'+p.last+'|'+p.reduce+'|'+(p.round?1:0);}
+function getSimple(){
+  if(!PLAN.main.ok) return null;
+  const k=simpleKey();
+  if(!(k in PLAN.simpleCache)) PLAN.simpleCache[k]=simplifyPlan(S,PLAN.main,{int:S.simp.int,last:S.simp.last,reduce:S.simp.reduce,round:S.simp.round});
+  return PLAN.simpleCache[k];
+}
+function curPiano(){return S.simple?(getSimple()||PLAN.main):PLAN.main;}
+function segH(attr,opts,cur){return '<div class="seg small glass" role="group">'+opts.map(o=>'<button type="button" data-'+attr+'="'+o[0]+'" aria-pressed="'+(String(cur)===String(o[0]))+'">'+o[1]+'</button>').join('')+'</div>';}
+function simpleCtrls(){
+  const sp=S.simp;
+  return '<div class="card glass simp">'+
+    '<div class="srow" data-th="simpInt"><span>Intervallo</span>'+segH('sint',[[3,'3 m'],[5,'5 m'],[6,'6 m'],[9,'9 m']],sp.int)+'</div>'+
+    '<div class="srow" data-th="simpLast"><span>Ultima sosta</span>'+segH('slast',[[3,'3 m'],[5,'5 m'],[6,'6 m'],[9,'9 m']],sp.last)+'</div>'+
+    '<div class="srow" data-th="simpRed"><span>Soste in meno</span>'+segH('sred',[[0,'0'],[25,'−25%'],[50,'−50%'],[75,'−75%']],sp.reduce)+'</div>'+
+    '<div class="srow" data-th="simpRound"><span>Durate tonde</span><button type="button" class="toggle" role="switch" aria-checked="'+!!sp.round+'" aria-label="Durate tonde" data-sround="1"></button></div>'+
+    '</div>';
+}
+const dlt=c=>(c.dd>=0?'+':'−')+Math.abs(c.dd)+' m '+(c.dt>=0?'+':'−')+Math.abs(c.dt)+'′';
+function contOk(r){
+  if(!r||!r.ok) return false;
+  if(S.mode==='oc') return gasReport(r).every(x=>x.virtual||x.lvl==='ok'||(x.lvl==='warn'&&!S.warn.reserve));
+  const c=S.ccr;
+  return c.metab*r.runtime<=c.o2Vol*c.o2Bar&&c.loop*(r.E.P(r.maxD)-r.E.ps)+c.dilExtra<=c.dilVol*c.dilBar;
+}
+function contHTML(){
+  const list=S.cont.list, sel=Math.min(S.cont.sel||0,list.length-1), m=PLAN.main;
+  let h='<div class="card glass ctab" data-th="cont"><table class="tbl"><thead><tr><th>Scenario</th><th>Emersione</th><th>Risalita</th><th>CNS</th><th>Gas</th></tr></thead><tbody>';
+  if(m.ok) h+='<tr><td>Piano</td><td>'+Math.ceil(m.runtime)+'′</td><td>'+Math.ceil(m.tts)+'′</td><td>'+Math.round(m.cns)+'%</td><td>'+(contOk(m)?'ok':'<span style="color:var(--warn)">!</span>')+'</td></tr>';
+  list.forEach((c,i)=>{
+    const r=PLAN.conts[i];
+    h+='<tr class="tap'+(i===sel?' cur':'')+'" data-cs="'+i+'" tabindex="0" aria-pressed="'+(i===sel)+'"><td>'+dlt(c)+'</td>'+(r&&r.ok?'<td>'+Math.ceil(r.runtime)+'′</td><td>'+Math.ceil(r.tts)+'′</td><td>'+Math.round(r.cns)+'%</td><td>'+(contOk(r)?'ok':'<span style="color:var(--warn)">!</span>')+'</td>':'<td colspan="4">non calcolabile</td>')+'</tr>';
+  });
+  h+='</tbody></table><p class="foot" style="margin-top:8px">Tocca uno scenario per vederne il piano. Gli scenari si configurano in Impostazioni → Contingenza.</p></div>';
+  const r=PLAN.conts[sel];
+  h+=resultHTML(r,'Scenario '+dlt(list[sel])+': profondità e tempo cambiano su ogni settore.',{fork:S.mode==='oc'?'cont':null});
+  if(r&&r.ok&&S.mode==='oc') h+=gasCards(r);
+  return h;
+}
+function buildPages(){
+  REG=[];
+  const m=PLAN.main, pages=[];
+  let note='';
+  const pr=curPiano();
+  if(S.simple&&m.ok){
+    const sr=getSimple();
+    if(sr){
+      const dt=Math.ceil(sr.runtime)-Math.ceil(m.runtime);
+      note=(sr.stops.length<m.stops.length?sr.stops.length+' soste invece di '+m.stops.length:'Stesso numero di soste')+', '+(dt>0?dt+' minuti in più':'stesso runtime')+'. Ogni risalita è verificata con il modello.';
+    }else note=m.ndl?'Niente da semplificare: il piano è senza decompressione.':'Con questi parametri non trovo una versione semplificata valida.';
+  }
+  const ctrls=m.ok?'<div class="ctrls"><div class="seg small glass" role="group" aria-label="Versione"><button type="button" data-simple="0" aria-pressed="'+!S.simple+'">Completo</button><button type="button" data-simple="1" aria-pressed="'+!!S.simple+'">Semplice</button></div><div class="seg small glass" role="group" aria-label="Vista"><button type="button" data-view="table" aria-pressed="'+(S.view!=='metro')+'">Tabella</button><button type="button" data-view="metro" aria-pressed="'+(S.view==='metro')+'">Metro</button></div>'+(METRO_H&&S.view==='metro'?'<div class="seg small glass" role="group" aria-label="Orientamento della mappa"><button type="button" data-mdir="v" aria-pressed="'+(S.metroDir!=='h')+'">Verticale</button><button type="button" data-mdir="h" aria-pressed="'+(S.metroDir==='h')+'">Orizzontale</button></div>':'')+'</div>':'';
+  pages.push({key:'piano',label:'Piano',html:ctrls+resultHTML(pr,note,{dual:PLAN.cc,fork:S.mode==='oc'?'main':null,pre:S.simple&&m.ok?simpleCtrls():''})+(m.ok?hydroHTML(m)+'<button class="cta" type="button" id="btnShare" style="margin-top:4px">Condividi la scheda</button>':'')});
+  let gasH='';
+  if(m.ok) gasH=(S.mode==='ccr'?ccrCards(m):gasCards(m)+'<p class="foot">Nel cerchio: bar previsti a fine immersione. Pieno = gas usato, ambra = riserva.</p>')+trimHTML(m)+penHTML(m);
+  else gasH='<div class="empty">'+esc(m.error||'')+'</div>';
+  pages.push({key:'gas',label:'Gas',html:'<div data-th="sacBottom" class="wline info"><b>i</b><span>SAC '+S.cons.sacBottom+' L/min sul fondo, '+S.cons.sacDeco+' in risalita.</span></div>'+gasH});
+  if(S.mode==='ccr'){
+    const b=PLAN.bail;
+    const bn=S.ccr.bailout.length?'Abbandono del loop alla fine dell’ultimo settore, SAC × '+fmt(S.cons.stress,1)+'.':'Nessuna miscela di bailout configurata: uso diluente e gas disponibili. SAC × '+fmt(S.cons.stress,1)+'.';
+    pages.push({key:'bail',label:'Bailout',html:resultHTML(b,bn,{fork:'bail'})+(b.ok?gasCards(b):'')});
+  }
+  pages.push({key:'cont',label:'Contingenza',html:contHTML()});
+  PLAN.pageKeys=pages.map(p=>p.key);
+  return pages;
+}
+function renderPages(keep){
+  const tabs=$('#tabs'), pager=$('#pager'), left=keep?pager.scrollLeft:0, tops=keep?[...pager.querySelectorAll('.pg')].map(p=>p.scrollTop):[];
+  const pages=buildPages();
+  tabs.innerHTML=pages.map((p,i)=>'<button type="button" role="tab" aria-selected="'+(i===0)+'" data-i="'+i+'">'+esc(p.label)+'</button>').join('');
+  pager.innerHTML=pages.map((p,i)=>'<section class="pg" role="tabpanel" data-pi="'+i+'">'+p.html+'</section>').join('');
+  pager.scrollLeft=left;
+  pager.querySelectorAll('.pg').forEach((p,i)=>{if(tops[i]) p.scrollTop=tops[i];});
+  tabs.querySelectorAll('button').forEach(b=>b.onclick=()=>pager.scrollTo({left:pager.clientWidth*(+b.dataset.i),behavior:'smooth'}));
+  pager.onscroll=()=>{const i=Math.round(pager.scrollLeft/Math.max(1,pager.clientWidth));tabs.querySelectorAll('button').forEach((b,j)=>b.setAttribute('aria-selected',String(j===i)));};
+  pager.onscroll();
+  attachLong(pager);
+  const sh=$('#btnShare');if(sh) sh.onclick=shareCard;
+}
+function curPageIndex(){const p=$('#pager');return Math.round(p.scrollLeft/Math.max(1,p.clientWidth));}
+function busyThen(fn){
+  const p=$('#pager .pg');
+  if(p){const n=document.createElement('div');n.className='wline info';n.innerHTML='<b>…</b><span>Calcolo in corso</span>';p.prepend(n);}
+  setTimeout(fn,30);
+}
+$('#pager').addEventListener('click',e=>{
+  const t=e.target;
+  const sb=t.closest('[data-simple]');if(sb){S.simple=sb.dataset.simple==='1';save();busyThen(()=>renderPages(true));return;}
+  const vb=t.closest('[data-view]');if(vb){S.view=vb.dataset.view;save();busyThen(()=>renderPages(true));return;}
+  const md=t.closest('[data-mdir]');if(md){S.metroDir=md.dataset.mdir;save();renderPages(true);return;}
+  const si=t.closest('[data-sint]');if(si){S.simp.int=+si.dataset.sint;save();busyThen(()=>renderPages(true));return;}
+  const sl=t.closest('[data-slast]');if(sl){S.simp.last=+sl.dataset.slast;save();busyThen(()=>renderPages(true));return;}
+  const sr=t.closest('[data-sred]');if(sr){S.simp.reduce=+sr.dataset.sred;save();busyThen(()=>renderPages(true));return;}
+  const so=t.closest('[data-sround]');if(so){S.simp.round=!S.simp.round;save();busyThen(()=>renderPages(true));return;}
+  const cs=t.closest('[data-cs]');if(cs){S.cont.sel=+cs.dataset.cs;for(const k in VAR) if(k.startsWith('cont|')) delete VAR[k];save();renderPages(true);return;}
+  const st=t.closest('[data-si]');if(st&&!st._long){openWhy(REG[+st.dataset.ri],+st.dataset.si);}
+});
+$('#pager').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.key!==' ') return;
+  const st=e.target.closest('[data-si]');if(st){e.preventDefault();openWhy(REG[+st.dataset.ri],+st.dataset.si);return;}
+  const cs=e.target.closest('[data-cs]');if(cs){e.preventDefault();cs.click();}
+});
+function openPlan(){
+  for(const k in VAR) delete VAR[k];
+  COLS={};COLN=0;
+  const main=plan(S);
+  if(main.ok){for(const x of main.levels.concat(main.stops)) colOf(x.gas);}
+  PLAN={main,cc:crossCheck(S,main),simpleCache:{},bail:S.mode==='ccr'?plan(S,{bailout:true}):null,conts:S.cont.list.map(c=>plan(S,{dd:c.dd,dt:c.dt}))};
+  renderPages(false);
+  const L=S.levels;
+  $('#planCtx').textContent=(L.length>1?L.length+' settori, max '+Math.max(...L.map(l=>l.d))+' m':L[0].d+' m fino al '+L[0].t+'′')+', GF '+S.algo.gfLo+'/'+S.algo.gfHi;
+  setWater(Math.max(...L.map(l=>l.d)));
+  $('#plan').classList.add('open');document.body.classList.add('plan');
+  $('#home').setAttribute('aria-hidden','true');
+  setTimeout(()=>$('#btnBack').focus(),300);
+}
+(function slideCalc(){
+  const el=$('#btnCalc'), kn=el.querySelector('.knob'), fill=el.querySelector('.fill');
+  let x0=null, dx=0;
+  const max=()=>el.clientWidth-kn.offsetWidth-10;
+  const set=v=>{kn.style.transform='translateX('+v+'px)';fill.style.width=(v+31)+'px';};
+  const reset=()=>{el.classList.add('go');set(0);setTimeout(()=>el.classList.remove('go'),260);};
+  el.addEventListener('pointerdown',e=>{x0=e.clientX;dx=0;el.classList.remove('go');try{el.setPointerCapture(e.pointerId);}catch(_){}});
+  el.addEventListener('pointermove',e=>{if(x0==null) return;dx=Math.max(0,Math.min(max(),e.clientX-x0));set(dx);});
+  const end=()=>{
+    if(x0==null) return;x0=null;
+    if(dx>=max()*0.85){el.classList.add('go');set(max());if(navigator.vibrate)try{navigator.vibrate(15);}catch(_){}setTimeout(()=>{openPlan();setTimeout(reset,350);},180);}
+    else{if(dx<6) toast('Trascina il cerchio verso destra');reset();}
+  };
+  el.addEventListener('pointerup',end);el.addEventListener('pointercancel',()=>{x0=null;reset();});
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openPlan();}});
+})();
+
+/* ---------- why this stop: graphic ---------- */
+function whyChart(pA,pD,lead,gf){
+  const W=330,H=170,l=26,b=24,t=12,bw=(W-l-6)/16;
+  const vmax=Math.max(100,...(pA||[]),...(pD||[]),gf||0);
+  const Y=v=>t+(H-t-b)*(1-Math.max(0,v)/vmax);
+  let g='';
+  for(const v of [0,50,100]) g+='<line x1="'+l+'" x2="'+(W-4)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--line)"/><text x="'+(l-5)+'" y="'+(Y(v)+4)+'" text-anchor="end" font-size="10" fill="var(--ink2)">'+v+'</text>';
+  for(let i=0;i<16;i++){
+    const x=l+i*bw+2, w=bw-4, isL=lead&&lead.i===i, col=isL?'var(--warn)':'var(--ink)';
+    if(pA){const ya=Y(pA[i]);g+='<rect x="'+x+'" y="'+ya+'" width="'+w+'" height="'+Math.max(0,Y(0)-ya)+'" rx="2" fill="none" stroke="'+col+'" stroke-opacity=".55" stroke-dasharray="3 2"/>';}
+    if(pD){const yd=Y(pD[i]);g+='<rect x="'+(x+2)+'" y="'+yd+'" width="'+Math.max(1,w-4)+'" height="'+Math.max(0,Y(0)-yd)+'" rx="2" fill="'+col+'"/>';}
+    if(i===0||i===15||isL) g+='<text x="'+(x+w/2)+'" y="'+(H-8)+'" text-anchor="middle" font-size="10" fill="'+(isL?'var(--warn)':'var(--ink2)')+'">'+(i+1)+'</text>';
+  }
+  if(gf){const y=Y(gf);g+='<line x1="'+l+'" x2="'+(W-4)+'" y1="'+y+'" y2="'+y+'" stroke="var(--warn)" stroke-width="2" stroke-dasharray="6 4"/><text x="'+(W-6)+'" y="'+(y-5)+'" text-anchor="end" font-size="11" fill="var(--warn)">per ripartire '+Math.round(gf)+'%</text>';}
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Saturazione dei 16 compartimenti in percentuale del valore M, all’arrivo e alla partenza">'+g+'</svg>';
+}
+function openWhy(r,si){
+  if(!r||!r.stops) return;
+  const x=r.stops[si];if(!x) return;
+  const next=si+1<r.stops.length?r.stops[si+1].d:0;
+  let L=x.lead, pA=x.pA, pD=x.pD;
+  if(!L&&r.simplified&&PLAN&&PLAN.main.ok){const o=PLAN.main.stops.find(q=>q.d===x.d&&q.lead);if(o) L=o.lead;}
+  const tipo=L?(L.htN<=20?'veloce':L.htN<=110?'intermedio':'lento'):'';
+  let chips='<span class="pill">'+esc(x.gas)+'</span>';
+  if(x.sw&&x.from) chips+='<span class="pill warn">Cambio da '+esc(gasName(x.from))+'</span>';
+  if(L){
+    const tot=L.pn+L.ph+(L.px||0), he=tot>0?Math.round(L.ph/tot*100):0, hx=tot>0?Math.round((L.px||0)/tot*100):0;
+    chips+='<span class="pill" data-th="model">Comanda il n. '+(L.i+1)+', '+tipo+'</span><span class="pill">'+(he?'Elio '+he+'%':'')+(hx?(he?', ':'')+'idrogeno '+hx+'%':'')+(he||hx?', ':'')+'azoto '+(100-he-hx)+'%</span>';
+  }
+  if(r.simplified) chips+='<span class="pill">Piano semplificato</span>';
+  openMini('<div class="whyhead"><h2 class="serif">'+fmt(x.d,0)+' m</h2><span class="serif whyt">'+Math.round(x.dur)+'′</span><span class="whyn">→ '+(next?fmt(next,0)+' m':'superficie')+'</span></div>'+
+    '<div class="pills" style="margin:6px 0 10px">'+chips+'</div>'+
+    (pA||pD?'<div class="card glass" style="padding:10px 10px 4px">'+whyChart(pA,pD,L,L?L.gf:null)+'</div><p class="hint" style="margin:8px 2px 0">Quanto ogni compartimento è vicino al suo limite (valore M): tratteggio all’arrivo, pieno alla partenza. Dai veloci (1) ai lenti (16).</p>':'')+
+    '<div class="btns" style="grid-template-columns:1fr"><button class="cta" type="button" id="whyOk">Chiudi</button></div>');
+  attachLong($('#miniBody'));
+  $('#whyOk').onclick=closeMini;
+}
+
+/* ---------- share card ---------- */
+function shortGas(t){return String(t).replace('Trimix ','Tx ').replace('Hydreliox ','Hy ').replace('Heliox ','Hx ').replace('Hydrox ','Hyd ').replace('Ossigeno','O₂').replace(/^Loop /,'SP ');}
+function planText(r){
+  const L=S.levels;
+  let t='Bathys: '+L.map(l=>l.d+' m fino al '+l.t+'′').join(', ')+' ('+(S.mode==='ccr'?'CCR, diluente '+gasName(S.ccr.dil):'OC')+', GF '+S.algo.gfLo+'/'+S.algo.gfHi+')\n';
+  t+='Emersione '+Math.ceil(r.runtime)+'′, risalita '+Math.ceil(r.tts)+'′, CNS '+Math.round(r.cns)+'%\n';
+  for(const x of r.stops) t+=fmt(x.d,0)+' m  '+Math.round(x.dur)+'′  (run '+Math.ceil(x.rt-1e-6)+'′)  '+x.gas+'\n';
+  return t.trim();
+}
+async function shareCard(){
+  const r=curPiano();if(!r||!r.ok) return;
+  try{if(document.fonts&&document.fonts.ready) await document.fonts.ready;}catch(e){}
+  const cs=getComputedStyle(document.documentElement), ink=cs.getPropertyValue('--ink').trim()||'#fff', ink2=cs.getPropertyValue('--ink2').trim()||'rgba(255,255,255,.8)', warn=cs.getPropertyValue('--warn').trim()||'#FFC46B';
+  const bg=$('#water').style.getPropertyValue('--water')||'#06223A';
+  const rows=r.levels.concat(r.stops), two=rows.length>12, per=two?Math.ceil(rows.length/2):rows.length, show=Math.min(per,24), rowH=two?46:52;
+  const W=1080, H=Math.max(1350,720+show*rowH+90);
+  const cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');
+  g.fillStyle=bg;g.fillRect(0,0,W,H);
+  const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'rgba(255,255,255,0.10)');gr.addColorStop(1,'rgba(0,0,0,0.35)');g.fillStyle=gr;g.fillRect(0,0,W,H);
+  const serif="'Instrument Serif', Georgia, serif", sans="'Geist', system-ui, sans-serif";
+  const fit=(txt,maxW)=>{txt=String(txt);if(g.measureText(txt).width<=maxW) return txt;while(txt.length>1&&g.measureText(txt+'…').width>maxW) txt=txt.slice(0,-1);return txt+'…';};
+  g.fillStyle=ink2;g.font='48px '+serif;g.fillText('Bathys',72,110);
+  g.fillStyle=ink;g.font='88px '+serif;
+  const L=S.levels;g.fillText(fit(L.length>1?L.length+' settori, max '+Math.max(...L.map(l=>l.d))+' m':L[0].d+' m fino al '+L[0].t+'′',936),72,215);
+  g.fillStyle=ink2;g.font='32px '+sans;
+  const gl=S.mode==='ccr'?'CCR, diluente '+gasName(S.ccr.dil):effGases(S).map(gasName).join(', ');
+  g.fillText(fit(gl+', GF '+S.algo.gfLo+'/'+S.algo.gfHi,936),72,272);
+  g.font='30px '+sans;g.fillText('Emersione',72,360);g.fillText('Risalita',600,360);
+  g.fillStyle=ink;g.font='150px '+serif;g.fillText(Math.ceil(r.runtime)+'′',66,500);g.font='italic 150px '+serif;g.fillText(Math.ceil(r.tts)+'′',594,500);
+  g.fillStyle=ink2;g.font='30px '+sans;g.fillText('CNS '+Math.round(r.cns)+'%   OTU '+Math.round(r.otu)+(r.simplified?'   piano semplificato':''),72,570);
+  const cols=two?2:1, gap=two?40:0, colW=(936-gap)/cols;
+  const cx=two?[0,100,190,280]:[0,200,400,600];
+  for(let c=0;c<cols;c++){
+    const x0=72+c*(colW+gap), y0=660;
+    g.fillStyle=ink2;g.font=(two?'24px ':'26px ')+sans;
+    ['Prof.','Durata','Run','Gas'].forEach((t,i)=>g.fillText(t,x0+cx[i],y0));
+    rows.slice(c*per,c*per+show).forEach((x,i)=>{
+      const y=y0+46+i*rowH;
+      g.fillStyle=x.sw||x.k==='wash'?warn:ink;g.font=(x.k==='lvl'?'600 ':'')+(two?'30px ':'32px ')+sans;
+      g.fillText(fmt(x.d,0)+' m',x0+cx[0],y);g.fillText(Math.round(x.dur)+'′',x0+cx[1],y);g.fillText(Math.ceil(x.rt-1e-6)+'′',x0+cx[2],y);
+      g.font=(two?'24px ':'26px ')+sans;g.fillText(fit(two?shortGas(x.gas):x.gas,colW-cx[3]-8),x0+cx[3],y);
+    });
+  }
+  if(per>show){g.fillStyle=ink2;g.font='26px '+sans;g.fillText('Piano lungo: la tabella completa è nell’app.',72,H-50);}
+  const blob=await new Promise(res=>cv.toBlob(res,'image/png'));
+  const file=blob?new File([blob],'bathys-piano.png',{type:'image/png'}):null;
+  const text=planText(r);
+  try{
+    if(file&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],text:'Piano Bathys'});return;}
+  }catch(e){if(e&&e.name==='AbortError') return;}
+  const url=cv.toDataURL('image/png');
+  openMini('<h2 class="serif">Scheda del piano</h2><p class="hint">Tieni premuto sull’immagine per salvarla o condividerla su WhatsApp.</p><img src="'+url+'" alt="Scheda del piano" style="display:block;width:100%;max-height:52vh;object-fit:contain;border-radius:18px;border:1px solid var(--stroke)"><div class="btns"><button class="sec" type="button" id="shTxt">Copia il testo</button><button class="cta" type="button" id="shOk">Fatto</button></div>');
+  $('#shOk').onclick=closeMini;
+  $('#shTxt').onclick=async()=>{try{await navigator.clipboard.writeText(text);toast('Testo copiato');}catch(e){toast('Copia non disponibile qui');}};
+}
+
+/* reverse planning */
+function invFeasible(t){
+  const T=deep(S), i=S.act, delta=t-S.levels[i].t;
+  for(let j=i;j<T.levels.length;j++) T.levels[j].t+=delta;
+  const r=plan(T);
+  if(!r.ok||r.W.some(w=>w.lvl==='err')) return false;
+  const v=S.inv;
+  if(v.rtOn&&r.runtime>v.rt) return false;
+  if(v.ttsOn&&r.tts>v.tts) return false;
+  if(v.cnsOn&&r.cns>v.cns) return false;
+  if(v.gasOn){
+    if(T.mode==='oc'){if(gasReport(r).some(x=>!x.virtual&&x.lvl!=='ok')) return false;}
+    else{
+      const c=T.ccr;
+      if(c.metab*r.runtime>c.o2Vol*c.o2Bar) return false;
+      if(c.loop*(r.E.P(r.maxD)-r.E.ps)+c.dilExtra>c.dilVol*c.dilBar) return false;
+      const b=plan(T,{bailout:true});
+      if(!b.ok||gasReport(b).some(x=>!x.virtual&&x.lvl!=='ok')) return false;
+    }
+  }
+  return true;
+}
+function invSolve(){
+  const v=S.inv;
+  if(!v.rtOn&&!v.ttsOn&&!v.cnsOn&&!v.gasOn) return {none:true};
+  const T=deep(S), i=S.act, d0=timeMin(i)-S.levels[i].t;
+  for(let j=i;j<T.levels.length;j++) T.levels[j].t+=d0;
+  const r0=plan(T);
+  if(r0.error) return {t:null};
+  const lv=r0.levels[i];
+  let lo=Math.max(timeMin(i),Math.ceil(lv.rt-lv.dur-1e-6)+1);
+  if(!invFeasible(lo)) return {t:null};
+  let hi=lo+8;
+  while(invFeasible(hi)&&hi<4000){lo=hi;hi=lo*2;}
+  while(hi-lo>1){const mid=Math.floor((lo+hi)/2);if(invFeasible(mid)) lo=mid;else hi=mid;}
+  return {t:lo};
+}
+
+$('#btnBack').onclick=()=>{$('#plan').classList.remove('open');document.body.classList.remove('plan');$('#home').removeAttribute('aria-hidden');setWater(currentDepth());$('#btnCalc').focus();};
+
+/* ---------- long press → theory ---------- */
+function attachLong(root){
+  root.querySelectorAll('[data-th]').forEach(el=>{
+    if(el._lp||!el.dataset.th) return;el._lp=true;
+    let t=null,x=0,y=0;
+    el.addEventListener('pointerdown',e=>{x=e.clientX;y=e.clientY;el._long=false;t=setTimeout(()=>{el._long=true;if(navigator.vibrate)try{navigator.vibrate(12);}catch(_){};openTheory(el.dataset.th);},520);});
+    el.addEventListener('pointermove',e=>{if(t&&Math.hypot(e.clientX-x,e.clientY-y)>8){clearTimeout(t);t=null;}});
+    el.addEventListener('pointerup',()=>{clearTimeout(t);t=null;});
+    el.addEventListener('pointercancel',()=>{clearTimeout(t);t=null;});
+    el.addEventListener('contextmenu',e=>e.preventDefault());
+    el.addEventListener('click',e=>{if(el._long){e.preventDefault();e.stopImmediatePropagation();el._long=false;}},true);
+  });
+}
+
+/* ---------- sheets ---------- */
+const scrim=$('#scrim');
+let miniOpen=false, setOpen=false;
+function updScrim(){const on=miniOpen||setOpen;scrim.classList.toggle('on',on);document.body.classList.toggle('over',on);$('#settings').classList.toggle('behind',miniOpen&&setOpen);}
+scrim.onclick=()=>{if(miniOpen) closeMini(); else closeSettings();};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(TOUR) endTour(); else if(miniOpen) closeMini(); else if(setOpen) closeSettings(); else if($('#plan').classList.contains('open')) $('#btnBack').click();}});
+function sheetDrag(handle,sheet,close){
+  let y0=null;
+  handle.addEventListener('pointerdown',e=>{y0=e.clientY;sheet.style.transition='none';try{handle.setPointerCapture(e.pointerId);}catch(_){}});
+  handle.addEventListener('pointermove',e=>{if(y0==null) return;const dy=Math.max(0,e.clientY-y0);sheet.style.transform='translateY('+dy+'px)';});
+  const end=e=>{if(y0==null) return;const dy=e.clientY-y0;y0=null;sheet.style.transition='';sheet.style.transform='';if(dy>90) close();};
+  handle.addEventListener('pointerup',end);handle.addEventListener('pointercancel',end);
+}
+function openMini(html,onOpen){
+  $('#miniBody').innerHTML=html;$('#mini').classList.add('open');miniOpen=true;updScrim();
+  if(onOpen) setTimeout(onOpen,60);
+}
+function closeMini(){$('#mini').classList.remove('open');miniOpen=false;updScrim();}
+sheetDrag($('#mini .shandle'),$('#mini'),closeMini);
+
+function parseNum(v){return Number(String(v).replace(',','.').trim());}
+function openNumber(o){
+  const dec=o.dec||0, step=o.step||(dec?Math.pow(10,-dec):1);
+  openMini('<h2 class="serif">'+esc(o.title)+'</h2><p class="hint">Da '+fmt(o.min,dec)+' a '+fmt(o.max,dec)+(o.unit?' '+o.unit:'')+(o.th?' — tieni premuto il titolo per l’approfondimento':'')+'</p>'+
+    '<div class="numrow"><button class="stepb" type="button" id="nMinus" aria-label="Diminuisci">−</button><input id="nIn" inputmode="decimal" autocomplete="off" aria-label="'+esc(o.title)+'" value="'+fmt(o.value,dec)+'"><button class="stepb" type="button" id="nPlus" aria-label="Aumenta">+</button>'+(o.unit?'<span class="unit">'+esc(o.unit)+'</span>':'')+'</div>'+
+    '<p class="err-msg" id="nErr"></p><div class="btns"><button class="sec" type="button" id="nCancel">Annulla</button><button class="cta" type="button" id="nOk">Fatto</button></div>',
+    ()=>{const i=$('#nIn');i.focus();i.select();});
+  if(o.th){const h=$('#miniBody h2');h.dataset.th=o.th;attachLong($('#miniBody'));}
+  const inp=$('#nIn');
+  const bump=k=>{let v=parseNum(inp.value);if(!isFinite(v)) v=o.value;v=clamp(Math.round((v+k*step)/step)*step,o.min,o.max);inp.value=fmt(v,dec);};
+  $('#nMinus').onclick=()=>bump(-1);$('#nPlus').onclick=()=>bump(1);
+  $('#nCancel').onclick=closeMini;
+  const ok=()=>{const v=parseNum(inp.value);if(!isFinite(v)||v<o.min||v>o.max){$('#nErr').textContent='Inserisci un valore da '+fmt(o.min,dec)+' a '+fmt(o.max,dec)+'.';return;}const r=Number(v.toFixed(dec));closeMini();o.onOk(r);};
+  $('#nOk').onclick=ok;inp.onkeydown=e=>{if(e.key==='Enter') ok();};
+}
+function openText(o){
+  openMini('<h2 class="serif">'+esc(o.title)+'</h2><input type="text" id="tIn" value="'+esc(o.value||'')+'" aria-label="'+esc(o.title)+'" maxlength="40"><p class="err-msg" id="tErr"></p><div class="btns"><button class="sec" type="button" id="tCancel">Annulla</button><button class="cta" type="button" id="tOk">'+esc(o.okLabel||'Fatto')+'</button></div>',()=>$('#tIn').focus());
+  $('#tCancel').onclick=closeMini;
+  const ok=()=>{const v=$('#tIn').value.trim();if(!v){$('#tErr').textContent='Scrivi un nome.';return;}closeMini();o.onOk(v);};
+  $('#tOk').onclick=ok;$('#tIn').onkeydown=e=>{if(e.key==='Enter') ok();};
+}
+function openConfirm(o){
+  openMini('<h2 class="serif">'+esc(o.title)+'</h2><p class="hint">'+esc(o.text)+'</p><div class="btns"><button class="sec" type="button" id="cNo">Annulla</button><button class="cta" type="button" id="cYes">'+esc(o.yes)+'</button></div>');
+  $('#cNo').onclick=closeMini;$('#cYes').onclick=()=>{closeMini();o.onYes();};
+}
+function openTheory(k){
+  const t=THEORY[k];if(!t) return;
+  openMini('<h2 class="serif">'+esc(t[0])+'</h2><div class="theory sbody" style="max-height:58vh;padding:0">'+t.slice(1).map(p=>'<p>'+esc(p)+'</p>').join('')+'</div><div class="btns" style="grid-template-columns:1fr"><button class="cta" type="button" id="thOk">Chiudi</button></div>');
+  $('#thOk').onclick=closeMini;
+}
+
+/* ---------- settings ---------- */
+let NAV=[];
+function openSettings(to){NAV=['root'];if(to&&to!=='root') NAV.push(to);renderSettings();$('#settings').classList.add('open');setOpen=true;updScrim();}
+function closeSettings(){$('#settings').classList.remove('open');setOpen=false;updScrim();renderAllHome();syncWheels();applyLook();}
+$('#setDone').onclick=closeSettings;
+sheetDrag($('#setHandle'),$('#settings'),closeSettings);
+function go(p){NAV.push(p);renderSettings();$('#setBody').scrollTop=0;}
+function back(){NAV.pop();renderSettings();}
+function num(label,path,unit,min,max,dec,th,extra){return Object.assign({t:'num',label,path,unit,min,max,dec:dec||0,th},extra||{});}
+function gasEditorRows(listPath,g){
+  const E=E0(), L=S.lim, cylOpts=S.cyls.map(c=>[c.id,c.name]);
+  const lim=g.role==='deco'?L.ppo2Deco:L.ppo2Bottom;
+  const info=[];
+  info.push({t:'info',label:'MOD a ppO₂ '+fmt(lim,2),value:fmt(modOf(E,g,lim),0)+' m',th:'mod'});
+  const md=minDepthOf(E,g,L.ppo2Min);
+  if(md>0) info.push({t:'info',label:'Respirabile da',value:fmt(md,0)+' m',th:'ppo2Min'});
+  return [
+    {rows:[
+      {t:'num',label:'Ossigeno',get:()=>g.o2,set:v=>{g.o2=v;const x=g.h2||0;if(g.o2+g.he+x>100){g.he=Math.max(0,100-g.o2-x);if(g.o2+g.he+x>100) g.h2=Math.max(0,100-g.o2-g.he);}},unit:'%',min:S.h2exp?1:5,max:100,dec:0,th:'o2'},
+      {t:'num',label:'Elio',get:()=>g.he,set:v=>{g.he=Math.min(v,100-g.o2-(g.h2||0));},unit:'%',min:0,max:98,dec:0,th:'he'},
+      ...(S.h2exp?[{t:'num',label:'Idrogeno',get:()=>g.h2||0,set:v=>{g.h2=Math.min(v,100-g.o2-g.he);},unit:'%',min:0,max:98,dec:0,th:'h2'}]:[]),
+      ...((g.h2||0)>0&&g.o2>S.h2cfg.o2max?[{t:'alert',label:'PERICOLO DI MORTE: con idrogeno l’ossigeno deve restare sotto il '+S.h2cfg.o2max+'%, altrimenti la miscela è esplosiva.',th:'h2'}]:[]),
+      {t:'seg',label:'Ruolo',opts:[['fondo','Fondo'],['viaggio','Viaggio'],['deco','Deco']],get:()=>g.role,set:v=>{g.role=v;},th:'role'}
+    ]},
+    {head:'Cambio',rows:[
+      {t:'tog',label:'Cambio automatico',get:()=>g.sw==null||g.sw==='',set:v=>{g.sw=v?null:Math.round(modOf(E,g,lim)/S.algo.stopInt)*S.algo.stopInt;},th:'sw'},
+      ...(g.sw==null||g.sw===''?[]:[{t:'num',label:'Profondità di cambio',get:()=>g.sw,set:v=>{g.sw=v;},unit:'m',min:0,max:400,dec:0,th:'sw'}]),
+      ...info
+    ]},
+    {head:'Bombola',rows:[
+      {t:'pick',label:'Tipo',opts:cylOpts.concat([['__custom','Personalizzata…']]),get:()=>g.cyl,set:v=>{if(v==='__custom'){const c={id:uid(),name:'Personalizzata',vol:10,bar:232};S.cyls.push(c);g.cyl=c.id;save();setTimeout(()=>go('cyl|'+c.id),10);return;}g.cyl=v;},th:'cyls'},
+      {t:'num',label:'Quante',get:()=>g.n||1,set:v=>{g.n=v;},unit:'',min:1,max:6,dec:0,th:'cyls'}
+    ]},
+    {rows:[{t:'act',label:'Elimina gas',danger:true,run:()=>{const arr=getP(listPath);const i=arr.indexOf(g);if(i>=0) arr.splice(i,1);save();back();}}]}
+  ];
+}
+function gasListPage(path,title,foot){
+  const arr=getP(path);
+  return {title,groups:[
+    {rows:arr.map(g=>({t:'link',label:gasName(g),value:roleName(g.role)+', '+(g.n||1)+' × '+cylOf(g.cyl).name,to:'gas|'+path+'|'+g.id,th:'role'}))
+      .concat([{t:'act',label:'Aggiungi gas',run:()=>{const g=G(32,0,arr.length?'deco':'fondo','s80',1);arr.push(g);save();go('gas|'+path+'|'+g.id);}}]),foot}
+  ]};
+}
+function roleName(r){return r==='fondo'?'fondo':r==='viaggio'?'viaggio':'deco';}
+function page(id){
+  const P=id.split('|');
+  switch(P[0]){
+  case 'root': return {title:'Impostazioni',groups:[
+    {rows:[{t:'link',label:'Piani preimpostati',value:'',to:'presets',th:'presets'}]},
+    {rows:[
+      {t:'link',label:'Algoritmo',value:'ZHL-16C, GF '+S.algo.gfLo+'/'+S.algo.gfHi,to:'algo',th:'model'},
+      {t:'link',label:'Velocità',value:'↓'+fmt(S.rates.desc,0)+'  ↑'+fmt(S.rates.asc,0)+' m/min',to:'rates',th:'asc'},
+      {t:'link',label:'Gas',value:gasList(S.gases),to:'gases',th:'gases'},
+      {t:'link',label:'Limiti',value:'ppO₂ '+fmt(S.lim.ppo2Bottom,1)+'/'+fmt(S.lim.ppo2Deco,1),to:'lim',th:'ppo2Bottom'},
+      {t:'link',label:'Avvisi',value:'END '+S.lim.endMax+' m, CNS '+S.warn.cnsWarn+'%',to:'warn',th:'warnPage'},
+      {t:'link',label:'CCR',value:'SP '+fmt(S.ccr.spLow,1)+' → '+fmt(S.ccr.spHigh,1),to:'ccr',th:'mode'},
+      {t:'link',label:'Consumo e riserve',value:'SAC '+S.cons.sacBottom+'/'+S.cons.sacDeco,to:'cons',th:'sacBottom'},
+      {t:'link',label:'Bombole',value:S.cyls.length+' tipi',to:'cyls',th:'cyls'},
+      {t:'link',label:'Contingenza',value:S.cont.list.length+(S.cont.list.length===1?' scenario':' scenari'),to:'cont',th:'cont'},
+      {t:'link',label:'Penetrazione',value:S.pen.on?'attiva, regola 1/'+S.pen.rule:'spenta',to:'pen',th:'pen'},
+      {t:'link',label:'Ambiente e aspetto',value:(S.env.water==='salt'?'mare':'acqua dolce')+', '+S.env.alt+' m',to:'env',th:'water'}
+    ]},
+    {rows:[{t:'link',label:'Sperimentale',value:S.h2exp?'idrogeno attivo':'spento',to:'exp',th:'h2'}]},
+    {rows:[{t:'link',label:'Avvertenze',value:'',to:'about',th:'about'},{t:'act',label:'Cerca aggiornamenti',run:()=>checkUpdate(false)}],foot:'Tieni premuto su una voce per leggere l’approfondimento. Versione '+APP_VERSION+'.'},
+    {rows:[{t:'act',label:'Ripristina impostazioni',danger:true,run:()=>openConfirm({title:'Ripristinare?',text:'Tutte le impostazioni, i gas, le bombole e i preset tornano ai valori iniziali.',yes:'Ripristina',onYes:()=>{S=defaults();S.seenIntro=true;S.tutDone=true;save();closeSettings();toast('Valori predefiniti ripristinati');}})}]}
+  ]};
+  case 'presets': return {title:'Piani preimpostati',groups:[
+    {rows:S.presets.map(p=>({t:'link',label:p.name,value:p.mode==='ccr'?'CCR':'OC',to:'preset|'+p.id,th:'presets'}))},
+    {rows:[{t:'act',label:'Salva la configurazione attuale',run:()=>openText({title:'Nome del preset',value:'',okLabel:'Salva',onOk:n=>{S.presets.push(snapshot(n));S.presetName=n;save();renderSettings();toast('Preset salvato');}})}],
+     foot:'Un preset salva modalità, settori, gas, CCR e gradient factors.'}
+  ]};
+  case 'preset':{
+    const p=S.presets.find(x=>x.id===P[1]);if(!p) return page('presets');
+    const lv=p.levels.map(l=>l.d+' m fino al '+l.t+'′').join(', ');
+    return {title:p.name,groups:[
+      {rows:[{t:'info',label:'Settori',value:lv},{t:'info',label:p.mode==='ccr'?'Diluente':'Gas',value:p.mode==='ccr'?gasName(p.dil):gasList(p.gases||[])},{t:'info',label:'GF',value:p.gf[0]+'/'+p.gf[1]}]},
+      {rows:[
+        {t:'act',label:'Applica',run:()=>{applyPreset(p);closeSettings();toast('Preset “'+p.name+'” applicato');}},
+        {t:'act',label:'Aggiorna con la configurazione attuale',run:()=>{Object.assign(p,snapshot(p.name),{id:p.id});save();renderSettings();toast('Preset aggiornato');}},
+        {t:'act',label:'Rinomina',run:()=>openText({title:'Rinomina',value:p.name,onOk:n=>{if(S.presetName===p.name) S.presetName=n;p.name=n;save();renderSettings();}})},
+        {t:'act',label:'Elimina preset',danger:true,run:()=>openConfirm({title:'Eliminare?',text:'Il preset “'+p.name+'” verrà eliminato.',yes:'Elimina',onYes:()=>{S.presets=S.presets.filter(x=>x!==p);save();back();}})}
+      ]}
+    ]};}
+  case 'algo': return {title:'Algoritmo',groups:[
+    {rows:[{t:'info',label:'Modello',value:'Bühlmann ZHL-16C',th:'model'}]},
+    {head:'Gradient factors',rows:[
+      num('GF basso','algo.gfLo','%',10,100,0,'gfLo'),
+      num('GF alto','algo.gfHi','%',10,100,0,'gfHi')]},
+    {head:'Soste',rows:[
+      num('Intervallo tra le soste','algo.stopInt','m',1,6,0,'stopInt'),
+      {t:'seg',label:'Ultima sosta',opts:[[3,'3 m'],[6,'6 m']],path:'algo.lastStop',th:'lastStop'},
+      num('Durata del cambio gas','algo.switchTime','min',0,5,0,'switchTime')]}
+  ]};
+  case 'rates': return {title:'Velocità',groups:[{rows:[
+    num('Discesa','rates.desc','m/min',1,60,0,'desc'),
+    num('Risalita fino alla prima sosta','rates.asc','m/min',1,20,0,'asc'),
+    num('Tra le soste','rates.stops','m/min',1,20,0,'stops'),
+    num('Dall’ultima sosta alla superficie','rates.surf','m/min',0.5,10,1,'surf')]}]};
+  case 'gases':{const pg=gasListPage('gases','Gas','Valgono per il circuito aperto. In risalita il planner passa sempre al gas più ricco di ossigeno utilizzabile.');
+    if(isHydroOC(S)){const H=hydroChain(S),E=E0();pg.groups.unshift({head:'Modalità idrogeno',rows:H.gases.filter(g=>g!==H.bot).map(g=>({t:'info',label:gasName(g),value:g.trans?'a '+H.dH2+' m, lavaggio':(g.role==='deco'?'deco da ':'viaggio da ')+Math.round(modOf(E,g,g.role==='deco'?S.lim.ppo2Deco:S.lim.ppo2Bottom))+' m',th:'h2chain'})),foot:'Le stage sono calcolate da Bathys: gli altri gas della lista non vengono usati finché il gas di fondo contiene idrogeno. Il numero di stage si sceglie in Sperimentale.'});}
+    return pg;}
+  case 'bailout': return gasListPage('ccr.bailout','Bailout','Se la lista è vuota il bailout usa il diluente e i gas del circuito aperto.');
+  case 'gas':{
+    const arr=getP(P[1]), g=arr&&arr.find(x=>x.id===P[2]);
+    if(!g) return page(P[1]==='gases'?'gases':'bailout');
+    return {title:gasName(g),groups:gasEditorRows(P[1],g)};}
+  case 'lim': return {title:'Limiti',groups:[
+    {head:'Ossigeno',rows:[
+      num('ppO₂ massima sul fondo','lim.ppo2Bottom','bar',0.8,1.6,2,'ppo2Bottom',{step:0.05}),
+      num('ppO₂ massima in deco','lim.ppo2Deco','bar',1.0,1.7,2,'ppo2Deco',{step:0.05}),
+      num('ppO₂ minima','lim.ppo2Min','bar',0.10,0.21,2,'ppo2Min',{step:0.01})],
+     foot:'Questi limiti decidono anche quando cambiare gas. Gli avvisi si configurano in Avvisi.'},
+    {head:'Narcosi',rows:[{t:'tog',label:'Ossigeno narcotico',path:'lim.o2Narc',th:'o2Narc'}]}
+  ]};
+  case 'warn':{const w=S.warn;const rows1=[{t:'tog',label:'ppO₂ oltre i limiti',path:'warn.ppo2',th:'ppo2Bottom'},{t:'tog',label:'Gas ipossici',path:'warn.hypo',th:'ppo2Min'}];
+    const rows2=[{t:'tog',label:'Narcosi (END)',path:'warn.end',th:'endMax'}];if(w.end) rows2.push(num('END massima','lim.endMax','m',10,60,0,'endMax'));
+    rows2.push({t:'tog',label:'Densità del gas',path:'warn.dens',th:'densMax'});if(w.dens){rows2.push(num('Densità consigliata','lim.densMax','g/L',3,8,1,'densMax',{step:0.1}));rows2.push(num('Densità massima','warn.densAbs','g/L',4,9,1,'densMax',{step:0.1}));}
+    const rows3=[{t:'tog',label:'CNS',path:'warn.cns',th:'cns'}];if(w.cns){rows3.push(num('Avviso CNS','warn.cnsWarn','%',10,150,0,'cns'));rows3.push(num('Limite CNS','warn.cnsMax','%',10,200,0,'cns'));}
+    rows3.push({t:'tog',label:'OTU',path:'warn.otu',th:'otu'});if(w.otu) rows3.push(num('OTU massime','warn.otuMax','',50,2000,0,'otu',{step:10}));
+    const rows4=[{t:'tog',label:'Controdiffusione isobarica',path:'lim.icd',th:'icd'},{t:'tog',label:'Oltre la validazione del modello',path:'warn.deep',th:'model'}];if(w.deep) rows4.push(num('Da','warn.deepVal','m',50,400,0,'model',{step:10}));
+    rows4.push({t:'tog',label:'Riserve di gas',path:'warn.reserve',th:'reserve'});
+    return {title:'Avvisi',groups:[{head:'Ossigeno',rows:rows1},{head:'Narcosi e respirazione',rows:rows2},{head:'Tossicità',rows:rows3},{head:'Altro',rows:rows4},
+      {head:'Idrogeno',rows:[{t:'info',label:'Ossigeno massimo con idrogeno',value:S.h2cfg.o2max+'%',th:'h2'}],foot:'L’avviso di miscela esplosiva resta sempre attivo; il valore si cambia in Sperimentale. Anche “gas insufficiente” resta sempre visibile.'}]};}
+  case 'ccr': return {title:'CCR',groups:[
+    {head:'Setpoint',rows:[
+      num('Basso, in discesa','ccr.spLow','bar',0.4,1.0,2,'spLow',{step:0.05}),
+      num('Passa all’alto a','ccr.spSwitch','m',0,100,0,'spSwitch'),
+      num('Alto, fondo e risalita','ccr.spHigh','bar',0.8,1.5,2,'spHigh',{step:0.05}),
+      num('In decompressione','ccr.spDeco','bar',0.8,1.6,2,'spDeco',{step:0.05})]},
+    {head:'Diluente',rows:[
+      num('Ossigeno','ccr.dil.o2','%',5,100,0,'dil'),
+      num('Elio','ccr.dil.he','%',0,95,0,'dil'),
+      {t:'info',label:'Flush alla massima',value:'ppO₂ '+fmt(ppO2(E0(),S.ccr.dil,Math.max(...S.levels.map(l=>l.d))),2),th:'dil'}]},
+    {head:'Bombolini',rows:[
+      num('Ossigeno, volume','ccr.o2Vol','L',0.5,7,1,'bottles',{step:0.5}),
+      num('Ossigeno, carica','ccr.o2Bar','bar',50,300,0,'bottles'),
+      num('Diluente, volume','ccr.dilVol','L',0.5,7,1,'bottles',{step:0.5}),
+      num('Diluente, carica','ccr.dilBar','bar',50,300,0,'bottles')]},
+    {head:'Consumi',rows:[
+      num('Ossigeno metabolico','ccr.metab','L/min',0.4,3,1,'metab',{step:0.1}),
+      num('Volume del loop','ccr.loop','L',2,15,1,'loop',{step:0.5}),
+      num('Diluente extra','ccr.dilExtra','L',0,500,0,'dilExtra',{step:10})]},
+    {rows:[{t:'link',label:'Gas di bailout',value:S.ccr.bailout.length?gasList(S.ccr.bailout):'gas disponibili',to:'bailout',th:'bailout'}]}
+  ]};
+  case 'cons': return {title:'Consumo e riserve',groups:[
+    {head:'SAC',rows:[
+      num('Sul fondo','cons.sacBottom','L/min',5,60,0,'sacBottom'),
+      num('In risalita e soste','cons.sacDeco','L/min',5,60,0,'sacDeco'),
+      num('Fattore stress','cons.stress','×',1,4,1,'stress',{step:0.1})]},
+    {head:'Riserva',rows:[
+      {t:'seg',label:'Metodo',opts:[['rock','Gas minimo'],['thirds','Terzi'],['none','Nessuna']],path:'cons.reserve',th:'reserve'},
+      num('Minuti per risolvere il problema','cons.problemMin','min',0,10,0,'problemMin'),
+      num('Subacquei sulla stessa scorta','cons.divers','',1,4,0,'divers')]}
+  ]};
+  case 'cyls': return {title:'Bombole',groups:[{rows:S.cyls.map(c=>({t:'link',label:c.name,value:fmt(c.vol,1)+' L, '+c.bar+' bar',to:'cyl|'+c.id,th:'cyls'}))
+      .concat([{t:'act',label:'Aggiungi bombola personalizzata',run:()=>{const c={id:uid(),name:'Nuova',vol:10,bar:232};S.cyls.push(c);save();go('cyl|'+c.id);}}]),
+      foot:'Servono solo per il calcolo del gas: volume interno e pressione di carica.'}]};
+  case 'cyl':{
+    const c=S.cyls.find(x=>x.id===P[1]);if(!c) return page('cyls');
+    const used=S.gases.concat(S.ccr.bailout).some(g=>g.cyl===c.id);
+    return {title:c.name,groups:[{rows:[
+      {t:'text',label:'Nome',get:()=>c.name,set:v=>{c.name=v;}},
+      {t:'num',label:'Volume',get:()=>c.vol,set:v=>{c.vol=v;},unit:'L',min:0.5,max:50,dec:1,th:'cyls',step:0.1},
+      {t:'num',label:'Pressione di carica',get:()=>c.bar,set:v=>{c.bar=v;},unit:'bar',min:50,max:350,dec:0,th:'cyls'},
+      {t:'info',label:'Capacità',value:fmtL(c.vol*c.bar)+' L'}]},
+      {rows:[used||S.cyls.length<2?{t:'info',label:used?'In uso da almeno un gas':'Serve almeno una bombola',value:''}:{t:'act',label:'Elimina bombola',danger:true,run:()=>{S.cyls=S.cyls.filter(x=>x!==c);save();back();}}]}]};}
+  case 'inv':{
+    const r=invSolve(), lv=lvl(), v=S.inv;
+    const res=r.none?{t:'info',label:'Attiva almeno un vincolo',value:''}:r.t==null?{t:'info',label:'Nessun tempo rispetta i vincoli',value:''}:{t:'info',label:'Settore '+(S.act+1)+' a '+lv.d+' m',value:'fino al minuto '+r.t,th:'inv'};
+    const rows=[];
+    rows.push({t:'tog',label:'Emersione entro un orario',path:'inv.rtOn',th:'inv'});
+    if(v.rtOn) rows.push(num('Minuto massimo di emersione','inv.rt','min',5,3000,0,'inv'));
+    rows.push({t:'tog',label:'Risalita massima',path:'inv.ttsOn',th:'inv'});
+    if(v.ttsOn) rows.push(num('Minuti di risalita','inv.tts','min',1,3000,0,'inv'));
+    rows.push({t:'tog',label:'CNS massimo',path:'inv.cnsOn',th:'cns'});
+    if(v.cnsOn) rows.push(num('CNS','inv.cns','%',10,150,0,'cns'));
+    rows.push({t:'tog',label:'Gas sufficiente, riserve comprese',path:'inv.gasOn',th:'reserve'});
+    return {title:'Tempo massimo',groups:[
+      {head:'Vincoli',rows,foot:'Cerca il minuto di stacco più lontano che rispetta tutti i vincoli attivi, alla profondità del settore selezionato.'},
+      {head:'Risultato',rows:[res].concat(r.t!=null?[{t:'act',label:'Usa questo tempo',run:()=>{const d=r.t-lvl().t;for(let j=S.act;j<S.levels.length;j++) S.levels[j].t+=d;save();closeSettings();toast('Minuto di stacco: '+r.t);}}]:[])}
+    ]};}
+  case 'exp':{const gs=[
+    {rows:[{t:'tog',label:'Miscele con idrogeno',get:()=>S.h2exp,set:v=>{
+      if(v) openConfirm({title:'Modalità sperimentale',text:'Le miscele con idrogeno sono state usate solo in immersioni sperimentali (COMEX, oltre 500 m). Nessun modello di decompressione è validato: il calcolo è un’estrapolazione da studio. Con più del '+S.h2cfg.o2max+'% di ossigeno l’idrogeno è esplosivo.',yes:'Attiva',onYes:()=>{S.h2exp=true;save();renderSettings();}});
+      else{S.h2exp=false;for(const g of S.gases) g.h2=0;for(const l of S.levels) if(l.dil) l.dil.h2=0;}
+    },th:'h2'}],
+     foot:'In circuito aperto metti l’idrogeno nel gas di fondo: le stage di viaggio e deco le calcola Bathys. In CCR lo imposti nel diluente di un settore.'}];
+    if(S.h2exp){
+      gs.push({head:'Idrogeno',rows:[
+        num('Ossigeno massimo con idrogeno','h2cfg.o2max','%',1,6,0,'h2'),
+        num('Salto di O₂ al primo cambio','h2cfg.step','punti',1,4,0,'h2step'),
+        num('Lavaggio dall’idrogeno','h2cfg.wash','min',0,60,0,'h2wash'),
+        num('Stage da portare','h2cfg.stages','',1,6,0,'h2chain'),
+        {t:'pick',label:'Bombola delle stage',opts:S.cyls.map(c=>[c.id,c.name]),get:()=>S.h2cfg.cyl,set:v=>{S.h2cfg.cyl=v;},th:'cyls'}]});
+      if(isHydroOC(S)){const H=hydroChain(S), E=E0();gs.push({head:'Stage calcolate',rows:H.gases.filter(g=>g!==H.bot).map(g=>({t:'info',label:gasName(g),value:g.trans?'a '+H.dH2+' m, lavaggio':(g.role==='deco'?'deco da ':'viaggio da ')+Math.round(modOf(E,g,g.role==='deco'?S.lim.ppo2Deco:S.lim.ppo2Bottom))+' m',th:'h2chain'}))});}
+    }
+    return {title:'Sperimentale',groups:gs};}
+  case 'pen': return {title:'Penetrazione',groups:[
+    {rows:[{t:'tog',label:'Calcola il punto di inversione',path:'pen.on',th:'pen'}]},
+    {head:'Regola',rows:[
+      {t:'seg',label:'Gas per l’andata',opts:[[3,'1/3'],[4,'1/4'],[6,'1/6']],path:'pen.rule',th:'pen'},
+      num('Velocità di pinneggiata','pen.speed','m/min',1,40,0,'pen')],
+     foot:'Il risultato compare nella scheda Gas del piano.'}
+  ]};
+  case 'cont': return {title:'Contingenza',groups:[
+    {rows:S.cont.list.map((c,i)=>({t:'link',label:'Scenario '+(i+1),value:dlt(c),to:'cnt|'+i,th:'cont'})).concat([{t:'act',label:'Aggiungi scenario',run:()=>{S.cont.list.push({dd:5,dt:5});save();go('cnt|'+(S.cont.list.length-1));}}]),
+     foot:'Ogni scenario cambia profondità e minuti di stacco di tutti i settori. Nel piano trovi la tabella di confronto nella scheda Contingenza.'}]};
+  case 'cnt':{const i=+P[1], c=S.cont.list[i];if(!c) return page('cont');
+    return {title:'Scenario '+(i+1),groups:[{rows:[
+      {t:'num',label:'Profondità',get:()=>c.dd,set:v=>{c.dd=v;},unit:'m',min:-50,max:60,dec:0,th:'cont'},
+      {t:'num',label:'Tempo',get:()=>c.dt,set:v=>{c.dt=v;},unit:'min',min:-60,max:120,dec:0,th:'cont'}],foot:'Valori negativi per uno scenario più corto o meno profondo.'},
+      {rows:S.cont.list.length>1?[{t:'act',label:'Elimina scenario',danger:true,run:()=>{S.cont.list.splice(i,1);S.cont.sel=0;save();back();}}]:[]}]};}
+  case 'lvl':{const i=+P[1], l=S.levels[i];if(!l) return page('root');
+    const gs=[{rows:[
+      {t:'num',label:'Profondità',get:()=>l.d,set:v=>{l.d=v;},unit:'m',min:1,max:400,dec:0,th:'depth'},
+      {t:'num',label:'Minuto di stacco',get:()=>l.t,set:v=>{setLevelTime(i,v);},unit:'min',min:timeMin(i),max:9999,dec:0,th:'time'}]}];
+    if(S.mode==='ccr'){
+      const E=E0(), bd=bestDil(E,S,l.d), dr=[{t:'tog',label:'Diluente diverso per questo settore',get:()=>!!l.dil,set:v=>{l.dil=v?{o2:bd.o2,he:bd.he,h2:bd.h2}:null;},th:'dilLevel'}];
+      if(l.dil){
+        const g=l.dil;
+        dr.push({t:'num',label:'Ossigeno',get:()=>g.o2,set:v=>{g.o2=v;if(g.o2+g.he+(g.h2||0)>100) g.he=Math.max(0,100-g.o2-(g.h2||0));},unit:'%',min:1,max:100,dec:0,th:'dil'});
+        dr.push({t:'num',label:'Elio',get:()=>g.he,set:v=>{g.he=Math.min(v,100-g.o2-(g.h2||0));},unit:'%',min:0,max:98,dec:0,th:'dil'});
+        if(S.h2exp) dr.push({t:'num',label:'Idrogeno',get:()=>g.h2||0,set:v=>{g.h2=Math.min(v,100-g.o2-g.he);},unit:'%',min:0,max:98,dec:0,th:'h2'});
+        dr.push({t:'info',label:'Flush a '+l.d+' m',value:'ppO₂ '+fmt(ppO2(E,g,l.d),2),th:'dil'});
+        if((g.h2||0)>0&&l.d<bd.safe) dr.push({t:'alert',label:'PERICOLO DI MORTE: a '+l.d+' m il loop avrebbe '+fmt(S.ccr.spHigh/E.P(l.d)*100,1)+'% di ossigeno con idrogeno. Serve almeno '+Math.ceil(bd.safe)+' m.',th:'h2'});
+      }
+      dr.push({t:'act',label:'Usa il consigliato: '+gasName(bd),run:()=>{l.dil={o2:bd.o2,he:bd.he,h2:bd.h2};save();renderSettings();}});
+      if(S.h2exp) dr.push({t:'info',label:'Idrogeno sicuro da',value:Math.ceil(bd.safe)+' m con setpoint '+fmt(S.ccr.spHigh,1),th:'h2'});
+      gs.push({head:'Diluente',rows:dr,foot:'Senza un diluente proprio il settore usa quello principale. In risalita Bathys passa da solo a diluenti adatti, con le soste di cambio.'});
+    }
+    if(S.levels.length>1) gs.push({rows:[{t:'act',label:'Elimina settore',danger:true,run:()=>{S.levels.splice(i,1);S.act=Math.max(0,Math.min(S.act,S.levels.length-1));for(let k=1;k<S.levels.length;k++) if(S.levels[k].t<=S.levels[k-1].t) S.levels[k].t=S.levels[k-1].t+1;save();back();}}]});
+    return {title:'Settore '+(i+1),groups:gs};}
+  case 'env': return {title:'Ambiente',groups:[
+    {head:'Acqua e quota',rows:[
+      {t:'seg',label:'Acqua',opts:[['salt','Salata'],['fresh','Dolce']],path:'env.water',th:'water'},
+      num('Altitudine','env.alt','m',0,5000,0,'alt',{step:50})]},
+    {head:'Aspetto',rows:[
+      {t:'seg',label:'Ambiente',opts:[['mare','Mare'],['lago','Lago'],['grotta','Grotta']],path:'env.theme',th:'theme'},
+      {t:'seg',label:'Tema',opts:[['dark','Scuro'],['light','Chiaro'],['auto','Auto'],['night','Notte']],path:'env.look',th:'look'}]}
+  ]};
+  case 'about': return {title:'Avvertenze',groups:[{rows:[{t:'info',label:'Versione',value:APP_VERSION},{t:'act',label:'Cerca aggiornamenti',run:()=>checkUpdate(false)},{t:'info',label:'Dati',value:'solo su questo telefono'}],
+    foot:'Bathys è un pianificatore da usare a terra, non un computer subacqueo. Le immersioni con decompressione, trimix e rebreather richiedono formazione specifica.'},
+    {rows:[{t:'act',label:'Ripristina i valori predefiniti',danger:true,run:()=>openConfirm({title:'Ripristinare?',text:'Tutte le impostazioni, i gas, le bombole e i preset tornano ai valori iniziali.',yes:'Ripristina',onYes:()=>{S=defaults();S.seenIntro=true;save();closeSettings();toast('Valori predefiniti ripristinati');}})}]}]};
+  }
+  return page('root');
+}
+function snapshot(name){return {id:uid(),name,mode:S.mode,levels:deep(S.levels),gases:deep(S.gases),dil:deep(S.ccr.dil),bailout:deep(S.ccr.bailout),gf:[S.algo.gfLo,S.algo.gfHi]};}
+function applyPreset(p){
+  S.mode=p.mode;S.levels=deep(p.levels);S.act=0;
+  if(p.gases&&p.gases.length) S.gases=deep(p.gases);
+  if(p.dil) S.ccr.dil=deep(p.dil);
+  if(p.bailout) S.ccr.bailout=deep(p.bailout);
+  if(p.gf){S.algo.gfLo=p.gf[0];S.algo.gfHi=p.gf[1];}
+  S.presetName=p.name;save();
+}
+function rowVal(r){
+  const v=r.get?r.get():getP(r.path);
+  if(r.t==='num') return fmt(v,r.dec)+(r.unit?' '+r.unit:'');
+  return v;
+}
+function renderSettings(){
+  const id=NAV[NAV.length-1], pg=page(id);
+  $('#setTitle').textContent=pg.title;
+  $('#setLeft').innerHTML=NAV.length>1?'<button class="pillbtn plain" type="button" id="setBack" aria-label="Indietro">‹</button>':'';
+  if(NAV.length>1) $('#setBack').onclick=back;
+  const body=$('#setBody');let h='';const acts=[];
+  pg.groups.forEach((g,gi)=>{
+    if(!g.rows||!g.rows.length) return;
+    h+='<div class="grp">'+(g.head?'<h3>'+esc(g.head)+'</h3>':'')+'<div class="list">';
+    g.rows.forEach((r,ri)=>{
+      const k=gi+'_'+ri;acts.push([k,r]);
+      const th=r.th?' data-th="'+r.th+'"':'';
+      if(r.t==='link') h+='<button type="button" class="row" data-k="'+k+'"'+th+'><span class="l">'+esc(r.label)+'</span><span class="v">'+esc(r.value||'')+' ›</span></button>';
+      else if(r.t==='num') h+='<button type="button" class="row" data-k="'+k+'"'+th+'><span class="l">'+esc(r.label)+'</span><span class="v">'+esc(rowVal(r))+'</span></button>';
+      else if(r.t==='text') h+='<button type="button" class="row" data-k="'+k+'"><span class="l">'+esc(r.label)+'</span><span class="v">'+esc(r.get())+' ›</span></button>';
+      else if(r.t==='info') h+='<div class="row"'+th+' style="cursor:default"><span class="l">'+esc(r.label)+'</span><span class="v">'+esc(r.value)+'</span></div>';
+      else if(r.t==='tog'){const on=!!(r.get?r.get():getP(r.path));h+='<div class="row"'+th+'><span class="l">'+esc(r.label)+'</span><button type="button" class="toggle" role="switch" aria-checked="'+on+'" aria-label="'+esc(r.label)+'" data-k="'+k+'"></button></div>';}
+      else if(r.t==='seg'){const cur=r.get?r.get():getP(r.path);h+='<div class="row segrow"'+th+' style="cursor:default"><span class="l">'+esc(r.label)+'</span><div class="seg small glass" role="group" aria-label="'+esc(r.label)+'">'+r.opts.map(o=>'<button type="button" data-k="'+k+'" data-v="'+o[0]+'" aria-pressed="'+(String(cur)===String(o[0]))+'">'+esc(o[1])+'</button>').join('')+'</div></div>';}
+      else if(r.t==='pick'){const cur=r.get();const nm=(r.opts.find(o=>o[0]===cur)||['',''])[1];h+='<button type="button" class="row" data-k="'+k+'"'+th+'><span class="l">'+esc(r.label)+'</span><span class="v">'+esc(nm)+' ›</span></button>';}
+      else if(r.t==='alert') h+='<div class="row alert"'+th+'><span>'+esc(r.label)+'</span></div>';
+      else if(r.t==='act') h+='<button type="button" class="row '+(r.danger?'danger':'act')+'" data-k="'+k+'">'+esc(r.label)+'</button>';
+    });
+    h+='</div>'+(g.foot?'<p class="gfoot">'+esc(g.foot)+'</p>':'')+'</div>';
+  });
+  body.innerHTML=h;
+  const map=Object.fromEntries(acts);
+  body.querySelectorAll('[data-k]').forEach(el=>{
+    const r=map[el.dataset.k];
+    el.addEventListener('click',()=>{
+      if(el._long) return;
+      if(r.t==='link') go(r.to);
+      else if(r.t==='num') openNumber({title:r.label,unit:r.unit,value:r.get?r.get():getP(r.path),min:r.min,max:r.max,dec:r.dec,step:r.step,th:r.th,onOk:v=>{r.set?r.set(v):setP(r.path,v);afterEdit();}});
+      else if(r.t==='text') openText({title:r.label,value:r.get(),onOk:v=>{r.set(v);afterEdit();}});
+      else if(r.t==='tog'){const v=!(r.get?r.get():getP(r.path));r.set?r.set(v):setP(r.path,v);afterEdit();}
+      else if(r.t==='seg'){let v=el.dataset.v;const o=r.opts.find(x=>String(x[0])===v);if(o) v=o[0];r.set?r.set(v):setP(r.path,v);afterEdit();}
+      else if(r.t==='pick') openPick(r);
+      else if(r.t==='act') r.run();
+    });
+  });
+  attachLong(body);
+}
+function afterEdit(){
+  if(S.algo.gfHi<S.algo.gfLo) S.algo.gfHi=S.algo.gfLo;
+  if(S.ccr.dil.o2+S.ccr.dil.he>100) S.ccr.dil.he=100-S.ccr.dil.o2;
+  save();renderSettings();applyLook();
+}
+function openPick(r){
+  const cur=r.get();
+  openMini('<h2 class="serif">'+esc(r.label)+'</h2><div class="list glass" style="margin-top:8px">'+r.opts.map(o=>'<button type="button" class="row" data-v="'+esc(o[0])+'"><span class="l">'+esc(o[1])+'</span><span class="check" aria-hidden="true">'+(o[0]===cur?'✓':'')+'</span></button>').join('')+'</div><div class="btns" style="grid-template-columns:1fr"><button class="sec" type="button" id="pkC">Annulla</button></div>');
+  $('#miniBody').querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{r.set(b.dataset.v);closeMini();afterEdit();});
+  $('#pkC').onclick=closeMini;
+}
+
+/* ---------- theory ---------- */
+const THEORY={
+  model:['Bühlmann ZHL-16C','Il modello divide il corpo in 16 compartimenti teorici, con tempi di emisaturazione che vanno da pochi minuti a oltre dieci ore, calcolati separatamente per azoto ed elio. Per ognuno stabilisce quanta sovrassaturazione può tollerare: è il valore M.','Il planner usa la variante con il primo compartimento a 5 minuti, la stessa di Subsurface. I gradient factors riducono i valori M per renderlo più conservativo.','Oltre i 150 m circa ZHL-16C lavora fuori dai dati su cui è stato costruito. Nemmeno VPM-B è più affidabile a quelle quote: entrambi sono estrapolazioni, e lì contano molto l’esperienza e i protocolli di chi fa immersioni del genere.'],
+  depth:['Profondità','La profondità del settore, in metri. Puoi trascinare la rotellina: più veloce scorri, più grandi diventano i salti. Toccando il numero lo scrivi a mano.','Le tacche in ambra indicano dove il gas di fondo supera la ppO₂ massima, l’END massima o la densità massima.'],
+  time:['Minuto di stacco','È il minuto totale dell’immersione in cui lasci quella profondità, discesa compresa. Con 60 m e minuto 20, a 20 m/min arrivi sul fondo al minuto 3 e ci resti 17 minuti.','Nei settori successivi vale lo stesso: il minuto di stacco deve essere dopo quello del settore precedente.'],
+  gfLo:['GF basso','Il GF basso decide dove inizia la decompressione: è la percentuale del valore M ammessa alla prima sosta. Più è basso, più profonda è la prima sosta.','Uno studio della marina americana (NEDU, 2011) ha trovato più casi di MDD con profili a soste profonde rispetto a profili con soste più basse a parità di tempo totale. Da allora molti subacquei tecnici hanno alzato il GF basso, spesso tra 40 e 60.'],
+  gfHi:['GF alto','La percentuale del valore M ammessa all’emersione. Tra la prima sosta e la superficie il GF sale in linea retta dal basso all’alto.','Abbassarlo allunga le soste basse, quelle dove si elimina gran parte del gas lento. Valori comuni nel tecnico: da 70 a 85.'],
+  stopInt:['Intervallo tra le soste','La distanza tra una sosta e l’altra. Le soste cadono sui multipli di questo valore: con 3 m sono a 6, 9, 12 m e così via.'],
+  lastStop:['Ultima sosta','La profondità dell’ultima sosta prima di emergere.','6 m è comodo con mare mosso e sfrutta meglio l’ossigeno puro, respirabile lì a circa 1,6 bar. 3 m accorcia la deco totale, ma la quota è più difficile da tenere con onda.','Con i gradient factors l’ultima sosta è spesso la più lunga, perché l’emersione deve rispettare il GF alto.'],
+  switchTime:['Durata del cambio gas','Minuti di sosta aggiunti quando cambi gas: servono per trovare la bombola giusta, verificare l’etichetta, aprire il rubinetto e controllare che respiri bene. Il cambio avviene sulle profondità delle soste.'],
+  desc:['Velocità di discesa','Una discesa più rapida accorcia il tempo in cui i tessuti assorbono gas durante il viaggio, ma aumenta lo sforzo e la narcosi improvvisa.','Con miscele molto ricche di elio, sotto i 150 m circa, una compressione rapida favorisce la sindrome nervosa da alte pressioni (HPNS): a quelle quote si scende più piano.'],
+  asc:['Risalita fino alla prima sosta','La velocità dal fondo alla prima sosta. 9–10 m/min è lo standard della maggior parte delle didattiche.'],
+  stops:['Tra le soste','La velocità tra una sosta e l’altra. Più lenta allunga leggermente il tempo totale ma rende il profilo più dolce.'],
+  surf:['Dall’ultima sosta alla superficie','L’ultimo tratto ha il salto di pressione relativo più grande di tutta l’immersione: da 6 m a 0 la pressione scende del 37%. Per questo si risale lentamente, 1–3 m/min.'],
+  gases:['Gas','La lista dei gas per il circuito aperto. Ogni gas ha un ruolo: fondo, viaggio o deco.','In discesa respiri il gas di fondo appena è respirabile; prima usi un gas da viaggio. In risalita il planner passa sempre al gas più ricco di ossigeno che rispetta i limiti.'],
+  role:['Ruolo del gas','Fondo: il gas respirato sul fondo.','Viaggio: per i tratti dove il gas di fondo non va bene, per esempio in superficie e nei primi metri con un ipossico come 10/70, o per ridurre la deco a quote intermedie.','Deco: usato solo in risalita, dalla sua profondità di cambio in su, con la ppO₂ massima di deco.'],
+  sw:['Profondità di cambio','In automatico il cambio avviene sulla prima sosta dove la ppO₂ non supera il limite, con una tolleranza di 0,03 bar per gli arrotondamenti: così l’ossigeno puro risulta utilizzabile a 6 m.','Puoi forzare una profondità a mano, per esempio per seguire una procedura di squadra. Il planner avvisa se la ppO₂ a quella quota supera il limite.'],
+  mod:['MOD','Massima profondità operativa: la profondità in cui il gas raggiunge la ppO₂ massima impostata. Si calcola come ppO₂ massima diviso frazione di ossigeno, meno la pressione in superficie, diviso la pressione per metro.'],
+  o2:['Ossigeno nella miscela','La percentuale di ossigeno. Determina MOD, tossicità e quanto gas inerte respiri. Analizza sempre la bombola prima dell’immersione e aggiorna il valore qui.'],
+  he:['Elio nella miscela','L’elio sostituisce parte dell’azoto: riduce la narcosi e la densità del gas. Entra ed esce dai tessuti più in fretta dell’azoto, e il modello lo calcola con tempi propri.'],
+  ppo2Bottom:['ppO₂ massima sul fondo','La pressione parziale massima di ossigeno durante la discesa e il fondo. 1,4 bar è il limite più usato per la fase di lavoro; per immersioni lunghe o faticose molti scendono a 1,2–1,3.','Il rischio è la tossicità acuta sul sistema nervoso centrale, che può dare convulsioni senza preavviso.'],
+  ppo2Deco:['ppO₂ massima in deco','Il limite in decompressione, quando sei fermo e a riposo: di solito 1,6 bar. Decide da che profondità puoi usare i gas deco.'],
+  ppo2Min:['ppO₂ minima','Sotto 0,16 bar circa l’ossigeno può non bastare a mantenere la coscienza. Con miscele ipossiche, in superficie e nei primi metri serve un gas da viaggio. Il planner indica da che profondità un gas è respirabile.'],
+  endMax:['END massima','Profondità equivalente narcotica: la profondità ad aria che darebbe la stessa narcosi del gas. 30 m è un valore comune; c’è chi usa 24 m in acque fredde o buie.'],
+  o2Narc:['Ossigeno narcotico','Se attivo, l’ossigeno conta come narcotico quanto l’azoto: è la scelta prudente e lo standard di molte didattiche tecniche. Se spento conta solo l’azoto, e l’END risulta più bassa.'],
+  densMax:['Densità massima','Un gas più denso è più faticoso da respirare e favorisce la ritenzione di CO₂. Gli studi di Anthony e Mitchell indicano 5,2 g/L come limite consigliato e 6,2 g/L come massimo da non superare.','Per questo a grandi profondità serve più elio anche quando l’END sarebbe accettabile.'],
+  spLow:['Setpoint basso','Il setpoint usato in superficie e in discesa. Vicino alla superficie un setpoint alto non si può raggiungere, perché la pressione ambiente è circa 1 bar, e il rebreather inietterebbe ossigeno di continuo. In discesa, poi, la compressione fa salire la ppO₂ da sola: per questo si parte bassi, di solito 0,7.'],
+  spSwitch:['Cambio al setpoint alto','La profondità in cui passi al setpoint alto durante la discesa. Se il fondo è meno profondo, il passaggio avviene all’inizio del fondo.'],
+  spHigh:['Setpoint alto','Il setpoint di fondo e risalita. Più alto significa meno gas inerte nel loop e meno decompressione, ma più dose di ossigeno (CNS e OTU).'],
+  spDeco:['Setpoint in decompressione','Si applica dalla prima sosta in su. C’è chi lo alza a 1,4–1,6 nelle soste basse per accorciare la deco, a costo di più CNS.'],
+  dil:['Diluente','Fornisce il gas inerte del loop. Deve essere respirabile come flush alla profondità massima, con ppO₂ sotto 1,6, e avere END e densità accettabili.','Il planner calcola il gas inerte del loop come pressione ambiente meno ppO₂ e vapore acqueo, diviso tra azoto ed elio nella proporzione del diluente.'],
+  bottles:['Bombolini','Volume interno e pressione di carica delle bombolette di ossigeno e diluente del rebreather.'],
+  metab:['Ossigeno metabolico','L’ossigeno che il corpo consuma, in litri al minuto in superficie, e che il rebreather deve reintegrare. A riposo è circa 0,8; nuotando 1–1,5. Non dipende dalla profondità.'],
+  loop:['Volume del loop','Il volume del circuito: sacchi, tubi e scrubber. Serve per stimare il diluente usato in discesa, perché il loop va riempito di nuovo man mano che la pressione aumenta.'],
+  dilExtra:['Diluente extra','Una stima del diluente usato per flush, svuotamento maschera e assetto. Regolala in base alla tua esperienza.'],
+  bailout:['Bailout','Il piano di emergenza in circuito aperto se il rebreather va abbandonato nel punto peggiore, cioè alla fine dell’ultimo settore, con il SAC moltiplicato per il fattore stress.','Se non configuri miscele di bailout, il calcolo usa il diluente e i gas della lista del circuito aperto, così vedi comunque cosa ti servirebbe.'],
+  mode:['Circuito aperto o CCR','In circuito aperto ogni respiro esce in acqua e la miscela inspirata è quella della bombola. In CCR il gas ricircola, la CO₂ viene assorbita dalla calce e l’elettronica tiene la ppO₂ al setpoint: il gas inerte cambia con la profondità.'],
+  sacBottom:['SAC sul fondo','Il consumo in superficie, in litri al minuto, durante discesa e fondo. Si ricava dai log: litri usati diviso minuti diviso pressione media in bar.'],
+  sacDeco:['SAC in risalita','Il consumo durante risalita e soste, di solito più basso perché sei fermo.'],
+  stress:['Fattore stress','Moltiplicatore del consumo in emergenza, usato per il bailout e il gas minimo. Sotto stress si respira molto di più: 1,5–2 è comune, c’è chi usa 3.'],
+  reserve:['Riserva','Gas minimo (rock bottom): la riserva del gas di fondo deve bastare a te e al compagno, sotto stress, per risolvere il problema e risalire fino al primo cambio gas.','Regola dei terzi: un terzo di ogni bombola resta di riserva. Nata per le grotte, in mare aperto è più prudente del necessario.','Nessuna: mostra solo il consumo.'],
+  problemMin:['Minuti per risolvere','Il tempo sul fondo per gestire il problema prima di iniziare la risalita, nel calcolo del gas minimo.'],
+  divers:['Subacquei sulla stessa scorta','Quanti subacquei respirano dalla stessa scorta nel calcolo del gas minimo: 2 se condividi con il compagno.'],
+  cyls:['Bombole','Volume interno in litri e pressione di carica. La capacità è calcolata come volume per pressione, come se il gas fosse ideale. Sopra i 200 bar il contenuto reale è qualche percento in meno, soprattutto con molto elio.'],
+  cont:['Contingenza','Ogni scenario ricalcola il piano con più (o meno) profondità e tempo, per avere pronta una tabella se l’immersione va diversamente dal previsto. I minuti si sommano a ogni minuto di stacco. Puoi creare tutti gli scenari che vuoi e confrontarli nella scheda Contingenza.'],
+  water:['Acqua','In acqua salata 10 m valgono circa 1,01 bar, in acqua dolce circa 0,98. In lago la stessa profondità dà quindi un po’ meno pressione.'],
+  alt:['Altitudine','In quota la pressione in superficie è più bassa, quindi il salto di pressione all’emersione è più grande e la decompressione si allunga.','Il planner ricava la pressione dall’altitudine e assume che tu sia già in equilibrio con la quota: se sei appena salito, i tuoi tessuti sono ancora carichi e serve più prudenza.'],
+  theme:['Ambiente','Cambia la luce dello sfondo: in mare il rosso sparisce nei primi metri e il blu resiste più a lungo, in lago il verde domina e il buio arriva prima, in grotta la luce è quella della torcia.'],
+  look:['Tema','Scuro, chiaro o automatico in base al telefono.','Notte usa solo rosso su nero: la luce rossa disturba poco l’adattamento dell’occhio al buio, utile in barca prima dell’alba o la sera. Lo sfondo resta nero a ogni profondità.'],
+  presets:['Preset','Configurazioni pronte da richiamare con un tocco. Salvano modalità, settori, gas, diluente, bailout e gradient factors. Puoi modificarle, rinominarle e crearne di nuove.'],
+  cns:['CNS','La dose di ossigeno per il sistema nervoso centrale, in percentuale del limite NOAA. Sopra l’80% conviene ridurre la ppO₂ o il tempo; il 100% è il limite.'],
+  otu:['OTU','Unità di tossicità polmonare dell’ossigeno. Un riferimento comune è non superare 300 OTU in una giornata.'],
+  h2:['Idrogeno (sperimentale)','Le miscele con idrogeno, hydrox (ossigeno e idrogeno) e hydreliox (ossigeno, elio e idrogeno), sono state usate in immersioni sperimentali: la COMEX con Hydra VIII nel 1988 raggiunse 534 m in mare, e Hydra X nel 1992 simulò 701 m in camera iperbarica.','L’idrogeno è il gas più leggero: abbassa molto la densità della miscela e attenua la sindrome nervosa da alte pressioni. È però narcotico, circa metà dell’azoto, e soprattutto con più del 4% circa di ossigeno forma una miscela infiammabile ed esplosiva. Per questo si respira solo molto in profondità, dove anche l’1–3% di ossigeno basta, e servono gas di transito in discesa e in risalita.','Bühlmann non ha coefficienti per l’idrogeno. Qui i tempi di emisaturazione sono stimati dalla legge di Graham (√ della massa molecolare) e i coefficienti a e b sono quelli dell’elio. È un’estrapolazione senza alcuna validazione: serve per studiare, non per immergersi.'],
+  simpLast:['Ultima sosta','La profondità dell’ultima sosta nel piano semplificato. Anche con soste ogni 9 m puoi fermarti per l’ultima a 5 o 6 m, dove l’ossigeno puro lavora meglio.'],
+  warnPage:['Avvisi','Ogni avviso si attiva o si spegne e ha i suoi valori. Spegnere un avviso non cambia il calcolo: smetti solo di vederlo. Restano sempre attivi gas insufficiente, settori impossibili e miscele con idrogeno esplosive.'],
+  dilLevel:['Diluente per settore','In CCR puoi cambiare diluente da un settore all’altro, per esempio un 10/70 sul fondo profondo e un 18/45 al settore successivo. Il consigliato ha una ppO₂ di flush intorno a 1,1 alla profondità del settore, e l’elio che serve per END e densità.','In risalita, se il diluente non va più bene alla quota successiva, Bathys inserisce un cambio con una sosta.'],
+  h2step:['Salto di O₂ al primo cambio','Quando lasci l’idrogeno, il primo gas ha poco più ossigeno di quello di fondo, per esempio dal 2 al 4%. Nei polmoni resta idrogeno per qualche minuto: se arrivasse subito un gas ricco di ossigeno, la miscela nei polmoni e negli erogatori potrebbe diventare infiammabile.'],
+  h2wash:['Lavaggio dall’idrogeno','I minuti che resti sul gas di transizione, senza idrogeno e con poco ossigeno, prima di passare a miscele più ricche. Vale anche in discesa: arrivi sull’idrogeno solo dopo il lavaggio.'],
+  h2chain:['Stage per l’idrogeno','Con un gas di fondo all’idrogeno Bathys ignora gli altri gas e calcola da solo le stage: prima un heliox di transizione con un piccolo salto di ossigeno, poi miscele scelte per ppO₂, END e densità, distribuite tra la profondità di cambio e l’ultima sosta. Tu scegli il gas di fondo, quante bombole e quante stage portare.'],
+  simpInt:['Intervallo tra le soste','Allarga la distanza tra le soste, per esempio ogni 5 o 6 m invece di 3. Il piano viene ricalcolato con il modello: meno soste da ricordare, ma ogni sosta un po’ più lunga. L’ultima sosta si adatta al nuovo intervallo.'],
+  simpRed:['Soste in meno','Toglie una parte delle soste, partendo da quelle che costano meno, e allunga quelle che restano quanto serve perché ogni risalita rispetti il modello. Le soste di cambio gas restano sempre. Più soste togli, più cresce il tempo totale.'],
+  simpRound:['Durate tonde','Arrotonda le soste per eccesso a multipli di 2 minuti, e di 5 sopra i 10 minuti: più facili da ricordare e da cronometrare.'],
+  fork:['Scenari della mappa','Nella vista metro ogni colonna è uno scenario: A con tutti i gas, le altre se perdi uno o più gas di viaggio o deco. Ogni colonna parte dal punto in cui si separa dalla linea da cui deriva, con tutte le soste e i cambi successivi. Il colore della linea è il gas respirato; i cerchi doppi sono cambi gas; i numeri sono i minuti di runtime.'],
+  dual:['Verificato','Ogni piano viene calcolato da due motori scritti in modo indipendente. Il primo integra i tessuti a piccoli passi, il secondo usa l’equazione di Schreiner con tabelle proprie.','Se il runtime differisce di più di un minuto e mezzo, o una sosta di più di un minuto, il piano viene segnalato: vuol dire che uno dei due ha un errore e non va usato finché non si capisce quale.'],
+  inv:['Tempo massimo','È il piano a ritroso: invece di dire quanto resti e scoprire la deco, fissi i vincoli e l’app trova il minuto di stacco più lontano che li rispetta tutti. Per esempio la barca che torna a un’ora precisa, una deco non oltre un’ora, il CNS sotto l’80% o il gas che basta con le riserve.','Se ci sono settori successivi, si spostano in avanti della stessa quantità.'],
+  icd:['Controdiffusione isobarica','Quando passi da una miscela ricca di elio a una ricca di azoto, i due gas si muovono a velocità diverse tra i tessuti: l’elio esce in fretta, l’azoto entra più lento. Nell’orecchio interno questo può creare bolle anche senza cambiare profondità.','La regola dei quinti, proposta da Steve Burton, dice che al cambio l’aumento della percentuale di azoto non dovrebbe superare un quinto della diminuzione di elio. È prudente: molti protocolli accettano il passaggio da trimix a EAN50 a 21 m, che la regola segnala. Se ti disturba puoi spegnere l’avviso nei limiti.'],
+  trim:['Assetto','Ogni litro di gas pesa: l’aria circa 1,2 grammi al litro, l’elio un settimo. Respirando migliaia di litri diventi più leggero di qualche chilo, e le bombole in alluminio a fine immersione tendono a galleggiare.','Il calcolo considera solo il peso del gas. Per la zavorra giusta aggiungi la spinta delle bombole vuote, che trovi nelle schede del produttore.'],
+  pen:['Penetrazione','In grotta o in relitto il gas non si conta solo per la risalita ma per uscire. Con la regola dei terzi usi un terzo per entrare, un terzo per uscire e un terzo resta per il compagno o gli imprevisti. Con flusso a favore all’andata si usano regole più strette, come 1/4 o 1/6.','In circuito aperto il punto di inversione è il tempo in cui consumi la tua quota d’andata. In CCR è il tempo per cui il bailout basta a uscire da solo sotto stress. Moltiplicato per la velocità di pinneggiata dà i metri di sagola.'],
+  about:['Avvertenze','Bathys è un pianificatore, non un computer subacqueo.']
+};
+
+/* ---------- init ---------- */
+initWheels();
+renderAllHome();
+applyLook();
+if(!S.seenIntro||!S.tutDone) setTimeout(openWelcome,400);
+async function checkUpdate(silent){
+  const sw=navigator.serviceWorker;
+  if(!sw||!sw.controller){if(!silent) toast('Gli aggiornamenti funzionano nell’app installata da GitHub');return;}
+  try{
+    const r=await fetch('index.html?v='+Date.now(),{cache:'no-store'});
+    const t=await r.text(), m=t.match(/const APP_VERSION='([^']+)'/), v=m?m[1]:null;
+    if(v&&v!==APP_VERSION){
+      openConfirm({title:'Aggiornamento disponibile',text:'C’è la versione '+v+' (hai la '+APP_VERSION+'). Le tue impostazioni restano.',yes:'Aggiorna',onYes:async()=>{
+        try{const reg=await sw.getRegistration();if(reg) await reg.update();const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)));}catch(e){}
+        location.reload();
+      }});
+    }else if(!silent) toast('Hai già l’ultima versione ('+APP_VERSION+')');
+  }catch(e){if(!silent) toast('Nessuna connessione: riprova più tardi');}
+}
+setTimeout(()=>checkUpdate(true),4000);
+try{if('serviceWorker' in navigator&&location.protocol==='https:'&&window.top===window&&!/claude\.ai|claudeusercontent/.test(location.host)) navigator.serviceWorker.register('sw.js').catch(()=>{});}catch(e){}
+$('#btnInfo').onclick=openHelp;$('#planInfo').onclick=openHelp;$('#setInfo').onclick=openHelp;
+$('#cskip').onclick=endTour;$('#cprev').onclick=()=>{if(TOUR&&TOUR.i>0){TOUR.i--;showStep();}};$('#cnext').onclick=()=>{if(!TOUR) return;if(TOUR.i<TOUR.steps.length-1){TOUR.i++;showStep();}else endTour();};
+window.addEventListener('resize',()=>{if(TOUR) placeStep();});
+</script>
+</body>
+</html>
